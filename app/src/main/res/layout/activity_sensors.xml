@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    tools:context=".SensorsActivity">
+
+    <TextView
+        android:id="@+id/Accelerometer"
+        android:layout_width="97dp"
+        android:layout_height="34dp"
+        android:gravity="center"
+        android:text="Accelerometer" />
+
+    <TextView
+        android:id="@+id/tax"
+        android:layout_width="25dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="0dp"
+        android:layout_toEndOf="@+id/Accelerometer"
+        android:gravity="center"
+        android:text="ax:" />
+
+    <TextView
+        android:id="@+id/ax"
+        android:layout_width="62dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="0dp"
+        android:layout_toEndOf="@+id/tax"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/tay"
+        android:layout_width="25dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="0dp"
+        android:layout_toEndOf="@+id/ax"
+        android:gravity="center"
+        android:text="ay:" />
+
+    <TextView
+        android:id="@+id/ay"
+        android:layout_width="62dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="0dp"
+        android:layout_toEndOf="@+id/tay"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/taz"
+        android:layout_width="25dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="0dp"
+        android:layout_toEndOf="@+id/ay"
+        android:gravity="center"
+        android:text="az:" />
+
+    <TextView
+        android:id="@+id/az"
+        android:layout_width="68dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="0dp"
+        android:layout_toEndOf="@+id/taz"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/Gyroscope"
+        android:layout_width="97dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/Accelerometer"
+        android:gravity="center"
+        android:text="Gyroscope" />
+
+    <TextView
+        android:id="@+id/tgx"
+        android:layout_width="25dp"
+        android:layout_height="34dp"
+        android:layout_toEndOf="@+id/Gyroscope"
+        android:layout_below="@+id/tax"
+        android:gravity="center"
+        android:text="gx:" />
+
+    <TextView
+        android:id="@+id/gx"
+        android:layout_width="62dp"
+        android:layout_height="34dp"
+        android:layout_toEndOf="@+id/tgx"
+        android:layout_below="@+id/ax"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/tgy"
+        android:layout_width="25dp"
+        android:layout_height="34dp"
+        android:layout_toEndOf="@+id/gx"
+        android:layout_below="@+id/ay"
+        android:gravity="center"
+        android:text="gy:" />
+
+    <TextView
+        android:id="@+id/gy"
+        android:layout_width="62dp"
+        android:layout_height="34dp"
+        android:layout_toEndOf="@+id/tgy"
+        android:layout_below="@+id/ay"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/tgz"
+        android:layout_width="25dp"
+        android:layout_height="34dp"
+        android:layout_toEndOf="@+id/gy"
+        android:layout_below="@+id/taz"
+        android:gravity="center"
+        android:text="gz:" />
+
+    <TextView
+        android:id="@+id/gz"
+        android:layout_width="68dp"
+        android:layout_height="34dp"
+        android:layout_toEndOf="@+id/tgz"
+        android:layout_below="@+id/az"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/Localization"
+        android:layout_width="80dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/Gyroscope"
+        android:gravity="center"
+        android:text="Localization" />
+
+    <TextView
+        android:id="@+id/tlatitude"
+        android:layout_width="63dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tgx"
+        android:layout_toEndOf="@+id/Localization"
+        android:gravity="center"
+        android:text="latitude:" />
+
+    <TextView
+        android:id="@+id/latitude"
+        android:layout_width="80dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tgy"
+        android:layout_toEndOf="@+id/tlatitude"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/tlongitude"
+        android:layout_width="69dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tgx"
+        android:layout_toEndOf="@+id/latitude"
+        android:gravity="center"
+        android:text="longitude:" />
+
+    <TextView
+        android:id="@+id/longitude"
+        android:layout_width="80dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/tgx"
+        android:layout_toEndOf="@+id/tlongitude"
+        android:gravity="center" />
+
+</RelativeLayout>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/beaconData"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/ID"
+        android:layout_width="85dp"
+        android:layout_height="43dp"
+        android:textSize="20dp"
+        android:gravity="center"
+        android:text="ID:" />
+
+    <TextView
+        android:id="@+id/beaconId"
+        android:layout_width="326dp"
+        android:layout_height="43dp"
+        android:layout_marginStart="0dp"
+        android:layout_toEndOf="@+id/ID"
+        android:gravity="center"
+        android:textSize="15dp"
+        android:text="TextView" />
+
+    <TextView
+        android:id="@+id/Proximity"
+        android:layout_width="114dp"
+        android:layout_height="45dp"
+        android:layout_below="@+id/ID"
+        android:layout_marginTop="0dp"
+        android:gravity="center"
+        android:textSize="20dp"
+        android:text="Proximity:" />
+
+    <TextView
+        android:id="@+id/beaconProximity"
+        android:layout_width="297dp"
+        android:layout_height="45dp"
+        android:layout_below="@+id/beaconId"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:gravity="center"
+        android:textSize="15dp"
+        android:layout_toEndOf="@+id/Proximity"
+        android:text="TextView" />
+</RelativeLayout>
