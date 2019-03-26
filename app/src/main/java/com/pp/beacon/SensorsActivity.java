@@ -1,6 +1,9 @@
 package com.pp.beacon;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -16,6 +19,7 @@ import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
@@ -36,9 +40,11 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
     private SensorManager sensorManager;
     private LocationManager locationManager;
+    private BroadcastReceiver broadcastReceiver;
     private double ax, ay, az;
     private double gx, gy, gz;
     private double longitude, latitude;
+    private int batteryLevel;
     private final String url = "itram.azurewebsites.net/api/sensorreadings/new";
 
     // endregion
@@ -53,10 +59,17 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         setUpBackButton();
         setUpSensors();
         setUpLocalization();
+        setUpBattery();
 
         if (isNetworkConnectionEnabled()) {
             callAsynchronousTask();
         }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        registerReceiver(broadcastReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
     }
 
     @Override
@@ -137,7 +150,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
                 });
             }
         };
-        timer.schedule(doAsynchronousTask, 0, 5000); //execute in every 50000 ms
+        timer.schedule(doAsynchronousTask, 0, 5000); //execute in every 5000 ms
     }
 
     private void setUpBackButton() {
@@ -165,6 +178,10 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void setUpBattery() {
+        broadcastReceiver = new BatteryBroadcastReceiver();
     }
 
     // endregion
@@ -212,6 +229,8 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         }
 
         private String HttpPost(String myUrl) throws IOException, JSONException {
+            Log.i("POST", "");
+
             URL url = new URL(myUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
@@ -233,6 +252,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             jsonObject.put("gz", gz);
             jsonObject.put("latitude", latitude);
             jsonObject.put("longitude", longitude);
+            jsonObject.put("batteryLevel", batteryLevel);
 
             return jsonObject;
         }
@@ -249,6 +269,17 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
         @Override
         protected void onPostExecute(String result) {
+        }
+    }
+
+    private class BatteryBroadcastReceiver extends BroadcastReceiver {
+        private final static String BATTERY_LEVEL = "level";
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            batteryLevel = intent.getIntExtra(BATTERY_LEVEL, 0);
+            TextView batteryLevelTextView = findViewById(R.id.batteryLevel);
+            batteryLevelTextView.setText(String.valueOf(batteryLevel));
         }
     }
 

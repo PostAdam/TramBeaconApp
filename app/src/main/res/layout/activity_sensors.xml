@@ -77,8 +77,8 @@
         android:id="@+id/tgx"
         android:layout_width="25dp"
         android:layout_height="34dp"
-        android:layout_toEndOf="@+id/Gyroscope"
         android:layout_below="@+id/tax"
+        android:layout_toEndOf="@+id/Gyroscope"
         android:gravity="center"
         android:text="gx:" />
 
@@ -86,16 +86,16 @@
         android:id="@+id/gx"
         android:layout_width="62dp"
         android:layout_height="34dp"
-        android:layout_toEndOf="@+id/tgx"
         android:layout_below="@+id/ax"
+        android:layout_toEndOf="@+id/tgx"
         android:gravity="center" />
 
     <TextView
         android:id="@+id/tgy"
         android:layout_width="25dp"
         android:layout_height="34dp"
-        android:layout_toEndOf="@+id/gx"
         android:layout_below="@+id/ay"
+        android:layout_toEndOf="@+id/gx"
         android:gravity="center"
         android:text="gy:" />
 
@@ -103,16 +103,16 @@
         android:id="@+id/gy"
         android:layout_width="62dp"
         android:layout_height="34dp"
-        android:layout_toEndOf="@+id/tgy"
         android:layout_below="@+id/ay"
+        android:layout_toEndOf="@+id/tgy"
         android:gravity="center" />
 
     <TextView
         android:id="@+id/tgz"
         android:layout_width="25dp"
         android:layout_height="34dp"
-        android:layout_toEndOf="@+id/gy"
         android:layout_below="@+id/taz"
+        android:layout_toEndOf="@+id/gy"
         android:gravity="center"
         android:text="gz:" />
 
@@ -120,8 +120,8 @@
         android:id="@+id/gz"
         android:layout_width="68dp"
         android:layout_height="34dp"
-        android:layout_toEndOf="@+id/tgz"
         android:layout_below="@+id/az"
+        android:layout_toEndOf="@+id/tgz"
         android:gravity="center" />
 
     <TextView
@@ -164,6 +164,22 @@
         android:layout_height="34dp"
         android:layout_below="@+id/tgx"
         android:layout_toEndOf="@+id/tlongitude"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/BatteryLevel"
+        android:layout_width="100dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/Localization"
+        android:text="BatteryLevel:"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/batteryLevel"
+        android:layout_width="80dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/latitude"
+        android:layout_toEndOf="@+id/BatteryLevel"
         android:gravity="center" />
 
 </RelativeLayout>
