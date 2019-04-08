@@ -8,178 +8,40 @@
     tools:context=".SensorsActivity">
 
     <TextView
-        android:id="@+id/Accelerometer"
-        android:layout_width="97dp"
+        android:id="@+id/PostCounter"
+        android:layout_width="130dp"
         android:layout_height="34dp"
         android:gravity="center"
-        android:text="Accelerometer" />
+        android:text="Number of POSTs: " />
 
     <TextView
-        android:id="@+id/tax"
-        android:layout_width="25dp"
+        android:id="@+id/postCounter"
+        android:layout_width="70dp"
         android:layout_height="34dp"
         android:layout_marginStart="0dp"
-        android:layout_toEndOf="@+id/Accelerometer"
-        android:gravity="center"
-        android:text="ax:" />
+        android:layout_toEndOf="@+id/PostCounter"
+        android:gravity="center" />
 
     <TextView
-        android:id="@+id/ax"
-        android:layout_width="62dp"
+        android:id="@+id/ImInTram"
+        android:layout_width="130dp"
         android:layout_height="34dp"
+        android:gravity="center"
         android:layout_marginStart="0dp"
-        android:layout_toEndOf="@+id/tax"
-        android:gravity="center" />
+        android:layout_below="@+id/PostCounter"
+        android:text="Im in tram: "/>
 
-    <TextView
-        android:id="@+id/tay"
-        android:layout_width="25dp"
+    <Switch
+        android:id="@+id/simpleSwitch"
+        android:layout_width="70dp"
         android:layout_height="34dp"
-        android:layout_marginStart="0dp"
-        android:layout_toEndOf="@+id/ax"
-        android:gravity="center"
-        android:text="ay:" />
-
-    <TextView
-        android:id="@+id/ay"
-        android:layout_width="62dp"
-        android:layout_height="34dp"
-        android:layout_marginStart="0dp"
-        android:layout_toEndOf="@+id/tay"
-        android:gravity="center" />
-
-    <TextView
-        android:id="@+id/taz"
-        android:layout_width="25dp"
-        android:layout_height="34dp"
-        android:layout_marginStart="0dp"
-        android:layout_toEndOf="@+id/ay"
-        android:gravity="center"
-        android:text="az:" />
-
-    <TextView
-        android:id="@+id/az"
-        android:layout_width="68dp"
-        android:layout_height="34dp"
-        android:layout_marginStart="0dp"
-        android:layout_toEndOf="@+id/taz"
-        android:gravity="center" />
-
-    <TextView
-        android:id="@+id/Gyroscope"
-        android:layout_width="97dp"
-        android:layout_height="34dp"
-        android:layout_below="@+id/Accelerometer"
-        android:gravity="center"
-        android:text="Gyroscope" />
-
-    <TextView
-        android:id="@+id/tgx"
-        android:layout_width="25dp"
-        android:layout_height="34dp"
-        android:layout_below="@+id/tax"
-        android:layout_toEndOf="@+id/Gyroscope"
-        android:gravity="center"
-        android:text="gx:" />
-
-    <TextView
-        android:id="@+id/gx"
-        android:layout_width="62dp"
-        android:layout_height="34dp"
-        android:layout_below="@+id/ax"
-        android:layout_toEndOf="@+id/tgx"
-        android:gravity="center" />
-
-    <TextView
-        android:id="@+id/tgy"
-        android:layout_width="25dp"
-        android:layout_height="34dp"
-        android:layout_below="@+id/ay"
-        android:layout_toEndOf="@+id/gx"
-        android:gravity="center"
-        android:text="gy:" />
-
-    <TextView
-        android:id="@+id/gy"
-        android:layout_width="62dp"
-        android:layout_height="34dp"
-        android:layout_below="@+id/ay"
-        android:layout_toEndOf="@+id/tgy"
-        android:gravity="center" />
-
-    <TextView
-        android:id="@+id/tgz"
-        android:layout_width="25dp"
-        android:layout_height="34dp"
-        android:layout_below="@+id/taz"
-        android:layout_toEndOf="@+id/gy"
-        android:gravity="center"
-        android:text="gz:" />
-
-    <TextView
-        android:id="@+id/gz"
-        android:layout_width="68dp"
-        android:layout_height="34dp"
-        android:layout_below="@+id/az"
-        android:layout_toEndOf="@+id/tgz"
-        android:gravity="center" />
-
-    <TextView
-        android:id="@+id/Localization"
-        android:layout_width="80dp"
-        android:layout_height="34dp"
-        android:layout_below="@+id/Gyroscope"
-        android:gravity="center"
-        android:text="Localization" />
-
-    <TextView
-        android:id="@+id/tlatitude"
-        android:layout_width="63dp"
-        android:layout_height="34dp"
-        android:layout_below="@+id/tgx"
-        android:layout_toEndOf="@+id/Localization"
-        android:gravity="center"
-        android:text="latitude:" />
-
-    <TextView
-        android:id="@+id/latitude"
-        android:layout_width="80dp"
-        android:layout_height="34dp"
-        android:layout_below="@+id/tgy"
-        android:layout_toEndOf="@+id/tlatitude"
-        android:gravity="center" />
-
-    <TextView
-        android:id="@+id/tlongitude"
-        android:layout_width="69dp"
-        android:layout_height="34dp"
-        android:layout_below="@+id/tgx"
-        android:layout_toEndOf="@+id/latitude"
-        android:gravity="center"
-        android:text="longitude:" />
-
-    <TextView
-        android:id="@+id/longitude"
-        android:layout_width="80dp"
-        android:layout_height="34dp"
-        android:layout_below="@+id/tgx"
-        android:layout_toEndOf="@+id/tlongitude"
-        android:gravity="center" />
-
-    <TextView
-        android:id="@+id/BatteryLevel"
-        android:layout_width="100dp"
-        android:layout_height="34dp"
-        android:layout_below="@+id/Localization"
-        android:text="BatteryLevel:"
-        android:gravity="center" />
-
-    <TextView
-        android:id="@+id/batteryLevel"
-        android:layout_width="80dp"
-        android:layout_height="34dp"
-        android:layout_below="@+id/latitude"
-        android:layout_toEndOf="@+id/BatteryLevel"
-        android:gravity="center" />
+        android:padding="8dp"
+        android:checked="false"
+        android:showText="true"
+        android:layout_toEndOf="@+id/ImInTram"
+        android:layout_below="@+id/PostCounter"
+        android:paddingLeft="10dp"
+        android:textOff="N"
+        android:textOn="Y"/>
 
 </RelativeLayout>

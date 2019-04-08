@@ -21,6 +21,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import org.json.JSONException;
@@ -41,11 +43,31 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     private SensorManager sensorManager;
     private LocationManager locationManager;
     private BroadcastReceiver broadcastReceiver;
+
     private double ax, ay, az;
     private double gx, gy, gz;
+    private float numberOfSteps;
+    private float stepDetector;
+    private double gravityX, gravityY, gravityZ;
+    private double rotationVecX, rotationVecY, rotationVecZ;
+
+    private double light;
+    private double pressure;
+
+    private double gameRotationVecX, gameRotationVecY, gameRotationVecZ;
+    private double geomagneticRotationVecX, geomagneticRotationVecY, geomagneticRotationVecZ;
+    private double magneticFieldX, magneticFieldY, magneticFieldZ;
+    private double proximity;
+
     private double longitude, latitude;
     private int batteryLevel;
-    private final String url = "itram.azurewebsites.net/api/sensorreadings/new";
+
+    private Switch simpleSwitch;
+    private boolean imInTram;
+
+    private int postCounter = 0;
+    private TextView postCounterTextView;
+    private final String url = "http://itram.azurewebsites.net/api/sensorreadings/new";
 
     // endregion
 
@@ -56,6 +78,9 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensors);
 
+        postCounterTextView = findViewById(R.id.postCounter);
+
+        setUpSwitch();
         setUpBackButton();
         setUpSensors();
         setUpLocalization();
@@ -89,23 +114,61 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             ax = event.values[0];
             ay = event.values[1];
             az = event.values[2];
-            TextView a = findViewById(R.id.ax);
-            a.setText(String.valueOf(ax));
-            a = findViewById(R.id.ay);
-            a.setText(String.valueOf(ay));
-            a = findViewById(R.id.az);
-            a.setText(String.valueOf(az));
         }
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             gx = event.values[0];
             gy = event.values[1];
             gz = event.values[2];
-            TextView g = findViewById(R.id.gx);
-            g.setText(String.valueOf(gx));
-            g = findViewById(R.id.gy);
-            g.setText(String.valueOf(gy));
-            g = findViewById(R.id.gz);
-            g.setText(String.valueOf(gz));
+        }
+
+        if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
+            numberOfSteps = event.values[0];
+        }
+
+        if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
+            gravityX = event.values[0];
+            gravityY = event.values[1];
+            gravityZ = event.values[2];
+        }
+
+        if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
+            rotationVecX = event.values[0];
+            rotationVecY = event.values[1];
+            rotationVecZ = event.values[2];
+        }
+
+        if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
+            stepDetector = event.values[0];
+        }
+
+        if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
+            light = event.values[0];
+        }
+
+        if (event.sensor.getType() == Sensor.TYPE_PRESSURE) {
+            pressure = event.values[0];
+        }
+
+        if (event.sensor.getType() == Sensor.TYPE_GAME_ROTATION_VECTOR) {
+            gameRotationVecX = event.values[0];
+            gameRotationVecY = event.values[1];
+            gameRotationVecZ = event.values[2];
+        }
+
+        if (event.sensor.getType() == Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR) {
+            geomagneticRotationVecX = event.values[0];
+            geomagneticRotationVecY = event.values[1];
+            geomagneticRotationVecZ = event.values[2];
+        }
+
+        if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+            magneticFieldX = event.values[0];
+            magneticFieldY = event.values[1];
+            magneticFieldZ = event.values[2];
+        }
+
+        if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
+            proximity = event.values[0];
         }
     }
 
@@ -162,6 +225,16 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         sensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE), SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_STEP_COUNTER), SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR), SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY), SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT), SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE), SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR), SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY), SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     private void setUpLocalization() {
@@ -184,6 +257,16 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         broadcastReceiver = new BatteryBroadcastReceiver();
     }
 
+    private void setUpSwitch() {
+        simpleSwitch = findViewById(R.id.simpleSwitch);
+        imInTram = simpleSwitch.isChecked();
+        simpleSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                imInTram = isChecked;
+            }
+        });
+    }
+
     // endregion
 
     // region Private Classes
@@ -193,11 +276,6 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         public void onLocationChanged(Location loc) {
             latitude = loc.getLatitude();
             longitude = loc.getLongitude();
-
-            TextView dimension = findViewById(R.id.latitude);
-            dimension.setText(String.valueOf(String.valueOf(latitude)));
-            dimension = findViewById(R.id.longitude);
-            dimension.setText(String.valueOf(String.valueOf(longitude)));
         }
 
         @Override
@@ -215,6 +293,11 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
     private class HTTPAsyncTask extends AsyncTask<String, Void, String> {
         @Override
+        protected void onPreExecute() {
+            postCounterTextView.setText(String.valueOf(String.valueOf(++postCounter)));
+        }
+
+        @Override
         protected String doInBackground(String... urls) {
             try {
                 try {
@@ -229,8 +312,6 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         }
 
         private String HttpPost(String myUrl) throws IOException, JSONException {
-            Log.i("POST", "");
-
             URL url = new URL(myUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
@@ -242,17 +323,47 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             return conn.getResponseMessage();
         }
 
+        private double FormatDouble(double number) {
+            String formattedString = String.format("%.3f", number);
+            double formattedDouble = Double.valueOf(formattedString);
+            return formattedDouble;
+        }
+
         private JSONObject buildJsonObject() throws JSONException {
             JSONObject jsonObject = new JSONObject();
-            jsonObject.put("ax", ax);
-            jsonObject.put("ay", ay);
-            jsonObject.put("az", az);
-            jsonObject.put("gx", gx);
-            jsonObject.put("gy", gy);
-            jsonObject.put("gz", gz);
-            jsonObject.put("latitude", latitude);
-            jsonObject.put("longitude", longitude);
-            jsonObject.put("batteryLevel", batteryLevel);
+            jsonObject.put("Ax", FormatDouble(ax));
+            jsonObject.put("Ay", FormatDouble(ay));
+            jsonObject.put("Az", FormatDouble(az));
+            jsonObject.put("AccelerometerUnit", "m/s^2");
+            jsonObject.put("Gx", FormatDouble(gx));
+            jsonObject.put("Gy", FormatDouble(gy));
+            jsonObject.put("Gz", FormatDouble(gz));
+            jsonObject.put("GyroscopeUnit", "rad/s");
+            jsonObject.put("Latitude", latitude);
+            jsonObject.put("Longitude", longitude);
+            jsonObject.put("LocationUnit", "dd");
+            jsonObject.put("BatteryLevel", batteryLevel);
+            jsonObject.put("NumberOfSteps", numberOfSteps);
+            jsonObject.put("StepDetector", stepDetector);
+            jsonObject.put("GravityX", FormatDouble(gravityX));
+            jsonObject.put("GravityY", FormatDouble(gravityY));
+            jsonObject.put("GravityZ", FormatDouble(gravityZ));
+            jsonObject.put("RotationVecX", FormatDouble(rotationVecX));
+            jsonObject.put("RotationVecY", FormatDouble(rotationVecY));
+            jsonObject.put("RotationVecZ", FormatDouble(rotationVecZ));
+            jsonObject.put("Light", FormatDouble(light));
+            jsonObject.put("Pressure", FormatDouble(pressure));
+            jsonObject.put("GameRotationVecX", FormatDouble(gameRotationVecX));
+            jsonObject.put("GameRotationVecY", FormatDouble(gameRotationVecY));
+            jsonObject.put("GameRotationVecZ", FormatDouble(gameRotationVecZ));
+            jsonObject.put("GeomagneticRotationVecX", FormatDouble(geomagneticRotationVecX));
+            jsonObject.put("GeomagneticRotationVecY", FormatDouble(geomagneticRotationVecY));
+            jsonObject.put("GeomagneticRotationVecZ", FormatDouble(geomagneticRotationVecZ));
+            jsonObject.put("MagneticFieldX", FormatDouble(magneticFieldX));
+            jsonObject.put("MagneticFieldY", FormatDouble(magneticFieldY));
+            jsonObject.put("MagneticFieldZ", FormatDouble(magneticFieldZ));
+            jsonObject.put("Proximity", FormatDouble(proximity));
+            jsonObject.put("ImInTram", imInTram);
 
             return jsonObject;
         }
@@ -278,8 +389,6 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         @Override
         public void onReceive(Context context, Intent intent) {
             batteryLevel = intent.getIntExtra(BATTERY_LEVEL, 0);
-            TextView batteryLevelTextView = findViewById(R.id.batteryLevel);
-            batteryLevelTextView.setText(String.valueOf(batteryLevel));
         }
     }
 
