@@ -22,6 +22,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -34,6 +35,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -65,6 +67,9 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     private Switch simpleSwitch;
     private boolean imInTram;
 
+    private String username;
+    private BeaconData beaconData;
+
     private int postCounter = 0;
     private TextView postCounterTextView;
     private final String url = "http://itram.azurewebsites.net/api/sensorreadings/new";
@@ -85,6 +90,14 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         setUpSensors();
         setUpLocalization();
         setUpBattery();
+
+        username = MainActivity.usernameText.getText().toString();
+        try {
+            beaconData = (BeaconData) MainActivity.beaconList.getAdapter().getItem(0);
+        } catch (Exception e) {
+            System.out.print(e.getMessage());
+            beaconData = new BeaconData("No Beacon here", "");
+        }
 
         if (isNetworkConnectionEnabled()) {
             callAsynchronousTask();
@@ -331,6 +344,9 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
         private JSONObject buildJsonObject() throws JSONException {
             JSONObject jsonObject = new JSONObject();
+            jsonObject.put("Username", username);
+            jsonObject.put("CurrentDate", Calendar.getInstance().getTime());
+            jsonObject.put("NearestBeaconId", beaconData.getBeaconId());
             jsonObject.put("Ax", FormatDouble(ax));
             jsonObject.put("Ay", FormatDouble(ay));
             jsonObject.put("Az", FormatDouble(az));
@@ -364,6 +380,8 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             jsonObject.put("MagneticFieldZ", FormatDouble(magneticFieldZ));
             jsonObject.put("Proximity", FormatDouble(proximity));
             jsonObject.put("ImInTram", imInTram);
+
+
 
             return jsonObject;
         }

@@ -4,7 +4,9 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.estimote.coresdk.common.requirements.SystemRequirementsChecker;
 import com.estimote.coresdk.observation.region.RegionUtils;
@@ -22,8 +24,9 @@ public class MainActivity extends AppCompatActivity {
 
     private BeaconManager beaconManager;
     private BeaconRegion region;
-    private ListView beaconList;
+    public static ListView beaconList;
     private AppCompatActivity appCompatActivity = this;
+    public static EditText usernameText;
 
     // endregion
 
@@ -47,6 +50,8 @@ public class MainActivity extends AppCompatActivity {
                 beaconList.setAdapter(adapter);
             }
         });
+
+        usernameText = findViewById(R.id.usernameText);
 
     }
 
