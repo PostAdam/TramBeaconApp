@@ -19,10 +19,8 @@ import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -36,6 +34,7 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -307,7 +306,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     private class HTTPAsyncTask extends AsyncTask<String, Void, String> {
         @Override
         protected void onPreExecute() {
-            postCounterTextView.setText(String.valueOf(String.valueOf(++postCounter)));
+            postCounterTextView.setText(String.valueOf(++postCounter));
         }
 
         @Override
@@ -336,10 +335,9 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             return conn.getResponseMessage();
         }
 
-        private double FormatDouble(double number) {
-            String formattedString = String.format("%.3f", number);
-            double formattedDouble = Double.valueOf(formattedString);
-            return formattedDouble;
+        private double formatDouble(double number) {
+            String formattedString = String.format(Locale.US, "%.3f", number);
+            return Double.valueOf(formattedString);
         }
 
         private JSONObject buildJsonObject() throws JSONException {
@@ -347,13 +345,13 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             jsonObject.put("Username", username);
             jsonObject.put("CurrentDate", Calendar.getInstance().getTime());
             jsonObject.put("NearestBeaconId", beaconData.getBeaconId());
-            jsonObject.put("Ax", FormatDouble(ax));
-            jsonObject.put("Ay", FormatDouble(ay));
-            jsonObject.put("Az", FormatDouble(az));
+            jsonObject.put("Ax", formatDouble(ax));
+            jsonObject.put("Ay", formatDouble(ay));
+            jsonObject.put("Az", formatDouble(az));
             jsonObject.put("AccelerometerUnit", "m/s^2");
-            jsonObject.put("Gx", FormatDouble(gx));
-            jsonObject.put("Gy", FormatDouble(gy));
-            jsonObject.put("Gz", FormatDouble(gz));
+            jsonObject.put("Gx", formatDouble(gx));
+            jsonObject.put("Gy", formatDouble(gy));
+            jsonObject.put("Gz", formatDouble(gz));
             jsonObject.put("GyroscopeUnit", "rad/s");
             jsonObject.put("Latitude", latitude);
             jsonObject.put("Longitude", longitude);
@@ -361,24 +359,24 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             jsonObject.put("BatteryLevel", batteryLevel);
             jsonObject.put("NumberOfSteps", numberOfSteps);
             jsonObject.put("StepDetector", stepDetector);
-            jsonObject.put("GravityX", FormatDouble(gravityX));
-            jsonObject.put("GravityY", FormatDouble(gravityY));
-            jsonObject.put("GravityZ", FormatDouble(gravityZ));
-            jsonObject.put("RotationVecX", FormatDouble(rotationVecX));
-            jsonObject.put("RotationVecY", FormatDouble(rotationVecY));
-            jsonObject.put("RotationVecZ", FormatDouble(rotationVecZ));
-            jsonObject.put("Light", FormatDouble(light));
-            jsonObject.put("Pressure", FormatDouble(pressure));
-            jsonObject.put("GameRotationVecX", FormatDouble(gameRotationVecX));
-            jsonObject.put("GameRotationVecY", FormatDouble(gameRotationVecY));
-            jsonObject.put("GameRotationVecZ", FormatDouble(gameRotationVecZ));
-            jsonObject.put("GeomagneticRotationVecX", FormatDouble(geomagneticRotationVecX));
-            jsonObject.put("GeomagneticRotationVecY", FormatDouble(geomagneticRotationVecY));
-            jsonObject.put("GeomagneticRotationVecZ", FormatDouble(geomagneticRotationVecZ));
-            jsonObject.put("MagneticFieldX", FormatDouble(magneticFieldX));
-            jsonObject.put("MagneticFieldY", FormatDouble(magneticFieldY));
-            jsonObject.put("MagneticFieldZ", FormatDouble(magneticFieldZ));
-            jsonObject.put("Proximity", FormatDouble(proximity));
+            jsonObject.put("GravityX", formatDouble(gravityX));
+            jsonObject.put("GravityY", formatDouble(gravityY));
+            jsonObject.put("GravityZ", formatDouble(gravityZ));
+            jsonObject.put("RotationVecX", formatDouble(rotationVecX));
+            jsonObject.put("RotationVecY", formatDouble(rotationVecY));
+            jsonObject.put("RotationVecZ", formatDouble(rotationVecZ));
+            jsonObject.put("Light", formatDouble(light));
+            jsonObject.put("Pressure", formatDouble(pressure));
+            jsonObject.put("GameRotationVecX", formatDouble(gameRotationVecX));
+            jsonObject.put("GameRotationVecY", formatDouble(gameRotationVecY));
+            jsonObject.put("GameRotationVecZ", formatDouble(gameRotationVecZ));
+            jsonObject.put("GeomagneticRotationVecX", formatDouble(geomagneticRotationVecX));
+            jsonObject.put("GeomagneticRotationVecY", formatDouble(geomagneticRotationVecY));
+            jsonObject.put("GeomagneticRotationVecZ", formatDouble(geomagneticRotationVecZ));
+            jsonObject.put("MagneticFieldX", formatDouble(magneticFieldX));
+            jsonObject.put("MagneticFieldY", formatDouble(magneticFieldY));
+            jsonObject.put("MagneticFieldZ", formatDouble(magneticFieldZ));
+            jsonObject.put("Proximity", formatDouble(proximity));
             jsonObject.put("ImInTram", imInTram);
 
 
