@@ -26,6 +26,7 @@ import android.widget.TextView;
 
 import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -433,11 +434,13 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             OutputStream os = conn.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
 
+            JSONArray jsonArray = new JSONArray();
             for(JSONObject jsonObject : jsonObjects) {
                 System.out.println("Adding single JSON object to buffor");
-                writer.write(jsonObject.toString());
+                jsonArray.put(jsonObject);
             }
 
+            writer.write(jsonArray.toString());
             writer.flush();
             writer.close();
             os.close();
