@@ -230,7 +230,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
                 });
             }
         };
-        timer.schedule(doAsynchronousTask, 0, 1000); //execute in every 5000 ms
+        timer.schedule(doAsynchronousTask, 0, 5000); //execute in every 5s
     }
 
     private void setUpBackButton() {
@@ -348,7 +348,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
         private String HttpPostPackage(String myUrl) throws IOException, JSONException {
 
-            if(this.jsonObjects.size() < 10) {
+            if(this.jsonObjects.size() < 3) {
                 this.jsonObjects.add(buildJsonObject());
                 System.out.println("Adding JSON object to list (" + jsonObjects.size() + ")");
                 return "Adding JSON object to list";
