@@ -24,6 +24,8 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.google.gson.JsonObject;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -33,6 +35,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Timer;
@@ -210,13 +213,14 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     private void callAsynchronousTask() {
         final Handler handler = new Handler();
         Timer timer = new Timer();
+        final ArrayList<JSONObject> jsonObjects = new ArrayList<>();
         TimerTask doAsynchronousTask = new TimerTask() {
             @Override
             public void run() {
                 handler.post(new Runnable() {
                     public void run() {
                         try {
-                            HTTPAsyncTask task = new HTTPAsyncTask();
+                            HTTPAsyncTask task = new HTTPAsyncTask(jsonObjects);
                             task.execute(url);
                         } catch (Exception e) {
                             e.printStackTrace();
@@ -225,7 +229,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
                 });
             }
         };
-        timer.schedule(doAsynchronousTask, 0, 5000); //execute in every 5000 ms
+        timer.schedule(doAsynchronousTask, 0, 1000); //execute in every 5000 ms
     }
 
     private void setUpBackButton() {
@@ -304,6 +308,12 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     }
 
     private class HTTPAsyncTask extends AsyncTask<String, Void, String> {
+        public ArrayList<JSONObject> jsonObjects;
+
+        public HTTPAsyncTask(ArrayList<JSONObject> jsonList) {
+            jsonObjects = jsonList;
+        }
+
         @Override
         protected void onPreExecute() {
             postCounterTextView.setText(String.valueOf(++postCounter));
@@ -313,7 +323,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         protected String doInBackground(String... urls) {
             try {
                 try {
-                    return HttpPost(urls[0]);
+                    return HttpPostPackage(urls[0]);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     return "Error!";
@@ -333,6 +343,31 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             conn.connect();
 
             return conn.getResponseMessage();
+        }
+
+        private String HttpPostPackage(String myUrl) throws IOException, JSONException {
+
+            if(jsonObjects.size() < 10) {
+                jsonObjects.add(buildJsonObject());
+                //System.out.println("Adding JSON object to list (" + jsonObjects.size() + ")");
+                return "Adding JSON object to list";
+            } else {
+                URL url = new URL(myUrl);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
+
+                //System.out.println("Start sending data");
+                for (JSONObject jsonObject : this.jsonObjects) {
+                    setPostRequestContent(conn, jsonObject);
+                    conn.connect();
+                    //System.out.println("Single data sended");
+                }
+                this.jsonObjects.clear();
+
+                return conn.getResponseMessage();
+            }
+
         }
 
         private double formatDouble(double number) {
