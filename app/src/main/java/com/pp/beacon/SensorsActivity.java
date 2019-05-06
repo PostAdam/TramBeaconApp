@@ -74,8 +74,8 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
     private int postCounter = 0;
     private TextView postCounterTextView;
-    private final String url = "http://itram.azurewebsites.net/api/sensorreadings/new";
-
+    private final String url = "http://itram.azurewebsites.net/api/sensorreadings/multiple-new";
+    //private final String url = "http://itram.azurewebsites.net/api/sensorreadings/new";
     // endregion
 
     // region API
@@ -347,9 +347,9 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
         private String HttpPostPackage(String myUrl) throws IOException, JSONException {
 
-            if(jsonObjects.size() < 10) {
-                jsonObjects.add(buildJsonObject());
-                //System.out.println("Adding JSON object to list (" + jsonObjects.size() + ")");
+            if(this.jsonObjects.size() < 10) {
+                this.jsonObjects.add(buildJsonObject());
+                System.out.println("Adding JSON object to list (" + jsonObjects.size() + ")");
                 return "Adding JSON object to list";
             } else {
                 URL url = new URL(myUrl);
@@ -357,12 +357,11 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
                 conn.setRequestMethod("POST");
                 conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
 
-                //System.out.println("Start sending data");
-                for (JSONObject jsonObject : this.jsonObjects) {
-                    setPostRequestContent(conn, jsonObject);
-                    conn.connect();
-                    //System.out.println("Single data sended");
-                }
+                System.out.println("Sending JSON package");
+                setPostRequestPackageContent(conn, this.jsonObjects);
+                System.out.println("JSON package sent");
+                conn.connect();
+
                 this.jsonObjects.clear();
 
                 return conn.getResponseMessage();
@@ -424,6 +423,21 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             OutputStream os = conn.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
             writer.write(jsonObject.toString());
+            writer.flush();
+            writer.close();
+            os.close();
+        }
+
+        private void setPostRequestPackageContent(HttpURLConnection conn,
+                                           ArrayList<JSONObject> jsonObjects) throws IOException {
+            OutputStream os = conn.getOutputStream();
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+
+            for(JSONObject jsonObject : jsonObjects) {
+                System.out.println("Adding single JSON object to buffor");
+                writer.write(jsonObject.toString());
+            }
+
             writer.flush();
             writer.close();
             os.close();
