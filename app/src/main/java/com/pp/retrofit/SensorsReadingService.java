@@ -7,5 +7,5 @@ import retrofit2.http.POST;
 
 public interface SensorsReadingService {
     @POST("sensorreadings/multiple-new")
-    Call postMultipleReadings(@Body RequestBody params);
+    Call<Void> postMultipleReadings(@Body RequestBody params);
 }
