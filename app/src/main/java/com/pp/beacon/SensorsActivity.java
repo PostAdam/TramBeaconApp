@@ -86,10 +86,12 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensors);
 
+
         preferences = getSharedPreferences(JWT_PREFERENCES, MODE_PRIVATE);
 
         postCounterTextView = findViewById(R.id.postCounter);
-
+        postCounterTextView.setText(String.valueOf(postCounter));
+        
         setUpSwitch();
         setUpBackButton();
         setUpSensors();
@@ -227,7 +229,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
                 });
             }
         };
-        timer.schedule(doAsynchronousTask, 0, 1000); //execute in every 5000 ms
+        timer.schedule(doAsynchronousTask, 0, 5000); //execute in every 5000 ms
     }
 
     private void setUpBackButton() {
@@ -302,16 +304,13 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     }
 
     private class HTTPAsyncTask extends AsyncTask<Void, Void, Void> {
-        public ArrayList<JSONObject> jsonObjects;
 
         public HTTPAsyncTask() {
-        }//ArrayList<JSONObject> jsonList) {
-        //  jsonObjects = jsonList;
-        //}
+        }
 
         @Override
         protected void onPreExecute() {
-            postCounterTextView.setText(String.valueOf(++postCounter));
+            //postCounterTextView.setText(String.valueOf(++postCounter));
         }
 
         @Override
@@ -336,7 +335,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             call.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
-                    System.out.println("###CODE: "+response.code());
+                    postCounterTextView.setText(String.valueOf(++postCounter));
                 }
 
                 @Override

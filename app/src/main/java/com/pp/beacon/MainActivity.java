@@ -49,9 +49,6 @@ public class MainActivity extends AppCompatActivity {
                 beaconList.setAdapter(adapter);
             }
         });
-
-        usernameText = findViewById(R.id.usernameText);
-
     }
 
     @Override
