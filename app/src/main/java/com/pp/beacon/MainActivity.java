@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.estimote.coresdk.common.requirements.SystemRequirementsChecker;
 import com.estimote.coresdk.observation.region.RegionUtils;
@@ -50,9 +49,6 @@ public class MainActivity extends AppCompatActivity {
                 beaconList.setAdapter(adapter);
             }
         });
-
-        usernameText = findViewById(R.id.usernameText);
-
     }
 
     @Override

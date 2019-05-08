@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -15,36 +16,34 @@ import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import com.google.gson.JsonObject;
+import com.google.gson.Gson;
+import com.pp.model.SensorReading;
+import com.pp.retrofit.RetrofitClientInstance;
+import com.pp.retrofit.SensorsReadingService;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class SensorsActivity extends AppCompatActivity implements SensorEventListener {
-    // region Privates
+import okhttp3.MediaType;
+import okhttp3.RequestBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+public class SensorsActivity extends AppCompatActivity implements SensorEventListener {
     private SensorManager sensorManager;
     private LocationManager locationManager;
     private BroadcastReceiver broadcastReceiver;
@@ -75,26 +74,30 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
     private int postCounter = 0;
     private TextView postCounterTextView;
-    private final String url = "http://itram.azurewebsites.net/api/sensorreadings/multiple-new";
-    //private final String url = "http://itram.azurewebsites.net/api/sensorreadings/new";
-    // endregion
 
-    // region API
+    private ArrayList<SensorReading> readingsJsonArray = new ArrayList<SensorReading>();
+
+    private static final String JWT_PREFERENCES = "jwtPreferences";
+    private static final String USERID_FIELD = "UserId";
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensors);
 
-        postCounterTextView = findViewById(R.id.postCounter);
 
+        preferences = getSharedPreferences(JWT_PREFERENCES, MODE_PRIVATE);
+
+        postCounterTextView = findViewById(R.id.postCounter);
+        postCounterTextView.setText(String.valueOf(postCounter));
+        
         setUpSwitch();
         setUpBackButton();
         setUpSensors();
         setUpLocalization();
         setUpBattery();
 
-        username = MainActivity.usernameText.getText().toString();
         try {
             beaconData = (BeaconData) MainActivity.beaconList.getAdapter().getItem(0);
         } catch (Exception e) {
@@ -199,10 +202,6 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         sensorManager.unregisterListener(this);
     }
 
-    // endregion
-
-    // region Auxiliary Methods
-
     private boolean isNetworkConnectionEnabled() {
         ConnectivityManager connMgr = (ConnectivityManager)
                 getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -221,8 +220,8 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
                 handler.post(new Runnable() {
                     public void run() {
                         try {
-                            HTTPAsyncTask task = new HTTPAsyncTask(jsonObjects);
-                            task.execute(url);
+                            SensorsActivity.HTTPAsyncTask task = new SensorsActivity.HTTPAsyncTask();
+                            task.execute();
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
@@ -230,7 +229,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
                 });
             }
         };
-        timer.schedule(doAsynchronousTask, 0, 5000); //execute in every 5s
+        timer.schedule(doAsynchronousTask, 0, 5000); //execute in every 5000 ms
     }
 
     private void setUpBackButton() {
@@ -263,7 +262,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             locationManager = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
             boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             if (isGPSEnabled) {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, new PhoneLocationListener());
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, new SensorsActivity.PhoneLocationListener());
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -271,7 +270,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     }
 
     private void setUpBattery() {
-        broadcastReceiver = new BatteryBroadcastReceiver();
+        broadcastReceiver = new SensorsActivity.BatteryBroadcastReceiver();
     }
 
     private void setUpSwitch() {
@@ -283,10 +282,6 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             }
         });
     }
-
-    // endregion
-
-    // region Private Classes
 
     private class PhoneLocationListener implements LocationListener {
         @Override
@@ -308,147 +303,98 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         }
     }
 
-    private class HTTPAsyncTask extends AsyncTask<String, Void, String> {
-        public ArrayList<JSONObject> jsonObjects;
+    private class HTTPAsyncTask extends AsyncTask<Void, Void, Void> {
 
-        public HTTPAsyncTask(ArrayList<JSONObject> jsonList) {
-            jsonObjects = jsonList;
+        public HTTPAsyncTask() {
         }
 
         @Override
         protected void onPreExecute() {
-            postCounterTextView.setText(String.valueOf(++postCounter));
+            //postCounterTextView.setText(String.valueOf(++postCounter));
         }
 
         @Override
-        protected String doInBackground(String... urls) {
-            try {
-                try {
-                    return HttpPostPackage(urls[0]);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    return "Error!";
+        protected Void doInBackground(Void... voids) {
+
+            HttpPostPackage();
+
+            return null;
+        }
+    }
+
+
+    private void HttpPostPackage() {
+
+        if(this.readingsJsonArray.size() < 10) {
+            this.readingsJsonArray.add(buildSensorReading());
+
+        } else {
+            String json = new Gson().toJson(readingsJsonArray);
+            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
+            SensorsReadingService service = RetrofitClientInstance.getRetrofitInstance().create(SensorsReadingService.class);
+            Call<Void> call = service.postMultipleReadings(body);
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    postCounterTextView.setText(String.valueOf(++postCounter));
                 }
-            } catch (IOException e) {
-                return "Unable to retrieve web page. URL may be invalid.";
-            }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+
+                }
+            });
+
+            this.readingsJsonArray.clear();
         }
 
-        private String HttpPost(String myUrl) throws IOException, JSONException {
-            URL url = new URL(myUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-            JSONObject jsonObject = buildJsonObject();
-            setPostRequestContent(conn, jsonObject);
-            conn.connect();
+    }
 
-            return conn.getResponseMessage();
-        }
+    private SensorReading buildSensorReading() {
+        String userId = preferences.getString(USERID_FIELD, "");
+        SensorReading reading = new SensorReading();
+        reading.setUserId(Integer.parseInt(userId));
+        reading.setNearestBeaconId(beaconData.getBeaconId());
+        reading.setaX(ax);
+        reading.setaY(ay);
+        reading.setaZ(az);
+        reading.setAccelerometerUnit("m/s^2");
+        reading.setgX(gx);
+        reading.setgY(gy);
+        reading.setgZ(gz);
+        reading.setGyroscopeUnit("rad/s");
+        reading.setLatitude(latitude);
+        reading.setLongitude(longitude);
+        reading.setLocationUnit("dd");
+        reading.setBatteryLevel(batteryLevel);
+        reading.setNumberOfSteps(numberOfSteps);
+        reading.setStepDetector(stepDetector);
+        reading.setGravityX(gravityX);
+        reading.setGravityY(gravityY);
+        reading.setGravityZ(gravityZ);
+        reading.setRotationX(rotationVecX);
+        reading.setRotationY(rotationVecY);
+        reading.setRotationZ(rotationVecZ);
+        reading.setLight(light);
+        reading.setPressure(pressure);
+        reading.setGameRotationX(gameRotationVecX);
+        reading.setGameRotationY(gameRotationVecY);
+        reading.setGameRotationZ(gameRotationVecZ);
+        reading.setGeomagneticRotationX(geomagneticRotationVecX);
+        reading.setGeomagneticRotationY(geomagneticRotationVecY);
+        reading.setGeomagneticRotationZ(geomagneticRotationVecZ);
+        reading.setMagneticFieldX(magneticFieldX);
+        reading.setMagneticFieldY(magneticFieldY);
+        reading.setMagneticFieldZ(magneticFieldZ);
+        reading.setProximity(proximity);
+        reading.setInTram(imInTram);
 
-        private String HttpPostPackage(String myUrl) throws IOException, JSONException {
+        return reading;
+    }
 
-            if(this.jsonObjects.size() < 3) {
-                this.jsonObjects.add(buildJsonObject());
-                System.out.println("Adding JSON object to list (" + jsonObjects.size() + ")");
-                return "Adding JSON object to list";
-            } else {
-                URL url = new URL(myUrl);
-                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("POST");
-                conn.setRequestProperty("Content-Type", "application/json; charset=utf-8");
-
-                System.out.println("Sending JSON package");
-                setPostRequestPackageContent(conn, this.jsonObjects);
-                System.out.println("JSON package sent");
-                conn.connect();
-
-                this.jsonObjects.clear();
-
-                return conn.getResponseMessage();
-            }
-
-        }
-
-        private double formatDouble(double number) {
-            String formattedString = String.format(Locale.US, "%.3f", number);
-            return Double.valueOf(formattedString);
-        }
-
-        private JSONObject buildJsonObject() throws JSONException {
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("Username", username);
-            jsonObject.put("CurrentDate", Calendar.getInstance().getTime());
-            jsonObject.put("NearestBeaconId", beaconData.getBeaconId());
-            jsonObject.put("Ax", formatDouble(ax));
-            jsonObject.put("Ay", formatDouble(ay));
-            jsonObject.put("Az", formatDouble(az));
-            jsonObject.put("AccelerometerUnit", "m/s^2");
-            jsonObject.put("Gx", formatDouble(gx));
-            jsonObject.put("Gy", formatDouble(gy));
-            jsonObject.put("Gz", formatDouble(gz));
-            jsonObject.put("GyroscopeUnit", "rad/s");
-            jsonObject.put("Latitude", latitude);
-            jsonObject.put("Longitude", longitude);
-            jsonObject.put("LocationUnit", "dd");
-            jsonObject.put("BatteryLevel", batteryLevel);
-            jsonObject.put("NumberOfSteps", numberOfSteps);
-            jsonObject.put("StepDetector", stepDetector);
-            jsonObject.put("GravityX", formatDouble(gravityX));
-            jsonObject.put("GravityY", formatDouble(gravityY));
-            jsonObject.put("GravityZ", formatDouble(gravityZ));
-            jsonObject.put("RotationVecX", formatDouble(rotationVecX));
-            jsonObject.put("RotationVecY", formatDouble(rotationVecY));
-            jsonObject.put("RotationVecZ", formatDouble(rotationVecZ));
-            jsonObject.put("Light", formatDouble(light));
-            jsonObject.put("Pressure", formatDouble(pressure));
-            jsonObject.put("GameRotationVecX", formatDouble(gameRotationVecX));
-            jsonObject.put("GameRotationVecY", formatDouble(gameRotationVecY));
-            jsonObject.put("GameRotationVecZ", formatDouble(gameRotationVecZ));
-            jsonObject.put("GeomagneticRotationVecX", formatDouble(geomagneticRotationVecX));
-            jsonObject.put("GeomagneticRotationVecY", formatDouble(geomagneticRotationVecY));
-            jsonObject.put("GeomagneticRotationVecZ", formatDouble(geomagneticRotationVecZ));
-            jsonObject.put("MagneticFieldX", formatDouble(magneticFieldX));
-            jsonObject.put("MagneticFieldY", formatDouble(magneticFieldY));
-            jsonObject.put("MagneticFieldZ", formatDouble(magneticFieldZ));
-            jsonObject.put("Proximity", formatDouble(proximity));
-            jsonObject.put("ImInTram", imInTram);
-
-
-
-            return jsonObject;
-        }
-
-        private void setPostRequestContent(HttpURLConnection conn,
-                                           JSONObject jsonObject) throws IOException {
-            OutputStream os = conn.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-            writer.write(jsonObject.toString());
-            writer.flush();
-            writer.close();
-            os.close();
-        }
-
-        private void setPostRequestPackageContent(HttpURLConnection conn,
-                                           ArrayList<JSONObject> jsonObjects) throws IOException {
-            OutputStream os = conn.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-
-            JSONArray jsonArray = new JSONArray();
-            for(JSONObject jsonObject : jsonObjects) {
-                System.out.println("Adding single JSON object to buffor");
-                jsonArray.put(jsonObject);
-            }
-
-            writer.write(jsonArray.toString());
-            writer.flush();
-            writer.close();
-            os.close();
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-        }
+    private double formatDouble(double number) {
+        String formattedString = String.format(Locale.US, "%.3f", number);
+        return Double.valueOf(formattedString);
     }
 
     private class BatteryBroadcastReceiver extends BroadcastReceiver {
@@ -459,6 +405,4 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             batteryLevel = intent.getIntExtra(BATTERY_LEVEL, 0);
         }
     }
-
-    // endregion
 }
