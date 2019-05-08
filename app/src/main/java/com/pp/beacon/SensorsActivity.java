@@ -322,6 +322,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         }
     }
 
+
     private void HttpPostPackage() {
 
         if(this.readingsJsonArray.size() < 10) {
