@@ -24,6 +24,7 @@ import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.pp.model.SensorReading;
@@ -33,7 +34,6 @@ import com.pp.retrofit.SensorsReadingService;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -69,7 +69,6 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     private Switch simpleSwitch;
     private boolean imInTram;
 
-    private String username;
     private BeaconData beaconData;
 
     private int postCounter = 0;
@@ -78,7 +77,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     private ArrayList<SensorReading> readingsJsonArray = new ArrayList<SensorReading>();
 
     private static final String JWT_PREFERENCES = "jwtPreferences";
-    private static final String USERID_FIELD = "UserId";
+    private static final String TOKEN_FIELD = "token";
     private SharedPreferences preferences;
 
     @Override
@@ -332,11 +331,16 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             String json = new Gson().toJson(readingsJsonArray);
             RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
             SensorsReadingService service = RetrofitClientInstance.getRetrofitInstance().create(SensorsReadingService.class);
-            Call<Void> call = service.postMultipleReadings(body);
+            String token = "Bearer " + preferences.getString(TOKEN_FIELD, "");
+            Call<Void> call = service.postMultipleReadings(body, token);
             call.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
-                    postCounterTextView.setText(String.valueOf(++postCounter));
+                    if(response.code() == 201){
+                        postCounterTextView.setText(String.valueOf(++postCounter));
+                    } else {
+                        Toast.makeText(SensorsActivity.this, "Failed while sending readings", Toast.LENGTH_LONG).show();
+                    }
                 }
 
                 @Override
@@ -351,9 +355,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     }
 
     private SensorReading buildSensorReading() {
-        String userId = preferences.getString(USERID_FIELD, "");
         SensorReading reading = new SensorReading();
-        reading.setUserId(Integer.parseInt(userId));
         reading.setNearestBeaconId(beaconData.getBeaconId());
         reading.setaX(ax);
         reading.setaY(ay);
@@ -387,15 +389,11 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         reading.setMagneticFieldY(magneticFieldY);
         reading.setMagneticFieldZ(magneticFieldZ);
         reading.setProximity(proximity);
-        reading.setInTram(imInTram);
+        reading.setImInTram(imInTram);
 
         return reading;
     }
 
-    private double formatDouble(double number) {
-        String formattedString = String.format(Locale.US, "%.3f", number);
-        return Double.valueOf(formattedString);
-    }
 
     private class BatteryBroadcastReceiver extends BroadcastReceiver {
         private final static String BATTERY_LEVEL = "level";

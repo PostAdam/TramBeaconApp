@@ -16,6 +16,7 @@
         android:usesCleartextTraffic="true">
         <activity android:name=".SensorsActivity"></activity>
         <activity android:name=".MainActivity"></activity>
+        <activity android:name=".RegisterActivity"></activity>
         <activity android:name=".LoginActivity">
 
             <intent-filter>

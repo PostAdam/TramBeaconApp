@@ -4,19 +4,15 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.pp.retrofit.LoginService;
+import com.pp.retrofit.AuthService;
 import com.pp.retrofit.RetrofitClientInstance;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.prefs.Preferences;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -57,7 +53,7 @@ public class LoginActivity extends AppCompatActivity {
         loginJSON.put("email", email);
         loginJSON.put("password", password);
         RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), loginJSON.toString());
-        LoginService service = RetrofitClientInstance.getRetrofitInstance().create(LoginService.class);
+        AuthService service = RetrofitClientInstance.getRetrofitInstance().create(AuthService.class);
         Call<String> call = service.login(body);
         call.enqueue(new Callback<String>() {
             @Override
@@ -67,11 +63,7 @@ public class LoginActivity extends AppCompatActivity {
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putString(TOKEN_FIELD, token);
                     editor.commit();
-                    try {
-                        DecodeJWT(token);
-                    } catch(JSONException ex) {
-                        Log.e("JSONException", ex.getMessage());
-                    }
+
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                 } else {
                     Toast.makeText(LoginActivity.this, "Login failed!", Toast.LENGTH_SHORT).show();
@@ -85,15 +77,7 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void DecodeJWT(String jwt) throws JSONException{
-        String[] splited = jwt.split(("\\."));
-        String body = splited[1];
-
-        String decodedBody = new String(Base64.decode(body, Base64.URL_SAFE));
-
-        JSONObject jsonBody = new JSONObject(decodedBody);
-        SharedPreferences.Editor editor =  preferences.edit();
-        editor.putString("UserId", jsonBody.getString("nameid"));
-        editor.commit();
+    public void register(View view) {
+        startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
     }
 }

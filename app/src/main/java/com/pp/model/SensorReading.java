@@ -1,7 +1,6 @@
 package com.pp.model;
 
 public class SensorReading {
-    private int userId;
     private String NearestBeaconId;
     private double aX;
     private double aY;
@@ -35,15 +34,8 @@ public class SensorReading {
     private double magneticFieldY;
     private double magneticFieldZ;
     private double proximity;
-    private boolean isInTram;
+    private boolean imInTram;
 
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
 
     public String getNearestBeaconId() {
         return NearestBeaconId;
@@ -309,11 +301,11 @@ public class SensorReading {
         this.proximity = proximity;
     }
 
-    public boolean isInTram() {
-        return isInTram;
+    public boolean isImInTram() {
+        return imInTram;
     }
 
-    public void setInTram(boolean inTram) {
-        isInTram = inTram;
+    public void setImInTram(boolean imInTram) {
+        this.imInTram = imInTram;
     }
 }
