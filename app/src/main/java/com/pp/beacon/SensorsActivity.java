@@ -228,7 +228,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
                 });
             }
         };
-        timer.schedule(doAsynchronousTask, 0, 5000); //execute in every 5000 ms
+        timer.schedule(doAsynchronousTask, 3000, 5000); //execute in every 5000 ms
     }
 
     private void setUpBackButton() {
