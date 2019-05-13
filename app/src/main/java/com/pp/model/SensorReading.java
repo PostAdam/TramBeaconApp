@@ -312,7 +312,8 @@ public class SensorReading {
     }
 
     private double formatDouble(double number) {
-        String formattedString = String.format(Locale.US, "%.3f", number);
+        //String formattedString = String.format(Locale.US, "%.9f", number);
+        String formattedString = Double.toString(number).replace(",", ".");
         return Double.valueOf(formattedString);
     }
 }
