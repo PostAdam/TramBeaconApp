@@ -1,5 +1,7 @@
 package com.pp.model;
 
+import java.util.Locale;
+
 public class SensorReading {
     private String NearestBeaconId;
     private double aX;
@@ -49,7 +51,7 @@ public class SensorReading {
     }
 
     public void setaX(double aX) {
-        this.aX = aX;
+        this.aX = formatDouble(aX);
     }
 
     public double getaY() {
@@ -57,7 +59,7 @@ public class SensorReading {
     }
 
     public void setaY(double aY) {
-        this.aY = aY;
+        this.aY = formatDouble(aY);
     }
 
     public double getaZ() {
@@ -65,7 +67,7 @@ public class SensorReading {
     }
 
     public void setaZ(double aZ) {
-        this.aZ = aZ;
+        this.aZ = formatDouble(aZ);
     }
 
     public String getAccelerometerUnit() {
@@ -81,7 +83,7 @@ public class SensorReading {
     }
 
     public void setgX(double gX) {
-        this.gX = gX;
+        this.gX = formatDouble(gX);
     }
 
     public double getgY() {
@@ -89,7 +91,7 @@ public class SensorReading {
     }
 
     public void setgY(double gY) {
-        this.gY = gY;
+        this.gY = formatDouble(gY);
     }
 
     public double getgZ() {
@@ -97,7 +99,7 @@ public class SensorReading {
     }
 
     public void setgZ(double gZ) {
-        this.gZ = gZ;
+        this.gZ = formatDouble(gZ);
     }
 
     public String getGyroscopeUnit() {
@@ -113,7 +115,7 @@ public class SensorReading {
     }
 
     public void setLatitude(double latitude) {
-        this.latitude = latitude;
+        this.latitude = formatDouble(latitude);
     }
 
     public double getLongitude() {
@@ -121,7 +123,7 @@ public class SensorReading {
     }
 
     public void setLongitude(double longitude) {
-        this.longitude = longitude;
+        this.longitude = formatDouble(longitude);
     }
 
     public String getLocationUnit() {
@@ -161,7 +163,7 @@ public class SensorReading {
     }
 
     public void setGravityX(double gravityX) {
-        this.gravityX = gravityX;
+        this.gravityX = formatDouble(gravityX);
     }
 
     public double getGravityY() {
@@ -169,7 +171,7 @@ public class SensorReading {
     }
 
     public void setGravityY(double gravityY) {
-        this.gravityY = gravityY;
+        this.gravityY = formatDouble(gravityY);
     }
 
     public double getGravityZ() {
@@ -177,7 +179,7 @@ public class SensorReading {
     }
 
     public void setGravityZ(double gravityZ) {
-        this.gravityZ = gravityZ;
+        this.gravityZ = formatDouble(gravityZ);
     }
 
     public double getRotationZ() {
@@ -185,7 +187,7 @@ public class SensorReading {
     }
 
     public void setRotationZ(double rotationZ) {
-        this.rotationZ = rotationZ;
+        this.rotationZ = formatDouble(rotationZ);
     }
 
     public double getRotationY() {
@@ -193,7 +195,7 @@ public class SensorReading {
     }
 
     public void setRotationY(double rotationY) {
-        this.rotationY = rotationY;
+        this.rotationY = formatDouble(rotationY);
     }
 
     public double getRotationX() {
@@ -201,7 +203,7 @@ public class SensorReading {
     }
 
     public void setRotationX(double rotationX) {
-        this.rotationX = rotationX;
+        this.rotationX = formatDouble(rotationX);
     }
 
     public double getLight() {
@@ -209,7 +211,7 @@ public class SensorReading {
     }
 
     public void setLight(double light) {
-        this.light = light;
+        this.light = formatDouble(light);
     }
 
     public double getPressure() {
@@ -217,7 +219,7 @@ public class SensorReading {
     }
 
     public void setPressure(double pressure) {
-        this.pressure = pressure;
+        this.pressure = formatDouble(pressure);
     }
 
     public double getGameRotationX() {
@@ -225,7 +227,7 @@ public class SensorReading {
     }
 
     public void setGameRotationX(double gameRotationX) {
-        this.gameRotationX = gameRotationX;
+        this.gameRotationX = formatDouble(gameRotationX);
     }
 
     public double getGameRotationY() {
@@ -233,7 +235,7 @@ public class SensorReading {
     }
 
     public void setGameRotationY(double gameRotationY) {
-        this.gameRotationY = gameRotationY;
+        this.gameRotationY = formatDouble(gameRotationY);
     }
 
     public double getGameRotationZ() {
@@ -241,7 +243,7 @@ public class SensorReading {
     }
 
     public void setGameRotationZ(double gameRotationZ) {
-        this.gameRotationZ = gameRotationZ;
+        this.gameRotationZ = formatDouble(gameRotationZ);
     }
 
     public double getGeomagneticRotationX() {
@@ -249,7 +251,7 @@ public class SensorReading {
     }
 
     public void setGeomagneticRotationX(double geomagneticRotationX) {
-        this.geomagneticRotationX = geomagneticRotationX;
+        this.geomagneticRotationX = formatDouble(geomagneticRotationX);
     }
 
     public double getGeomagneticRotationY() {
@@ -257,7 +259,7 @@ public class SensorReading {
     }
 
     public void setGeomagneticRotationY(double geomagneticRotationY) {
-        this.geomagneticRotationY = geomagneticRotationY;
+        this.geomagneticRotationY = formatDouble(geomagneticRotationY);
     }
 
     public double getGeomagneticRotationZ() {
@@ -265,7 +267,7 @@ public class SensorReading {
     }
 
     public void setGeomagneticRotationZ(double geomagneticRotationZ) {
-        this.geomagneticRotationZ = geomagneticRotationZ;
+        this.geomagneticRotationZ = formatDouble(geomagneticRotationZ);
     }
 
     public double getMagneticFieldX() {
@@ -273,7 +275,7 @@ public class SensorReading {
     }
 
     public void setMagneticFieldX(double magneticFieldX) {
-        this.magneticFieldX = magneticFieldX;
+        this.magneticFieldX = formatDouble(magneticFieldX);
     }
 
     public double getMagneticFieldY() {
@@ -281,7 +283,7 @@ public class SensorReading {
     }
 
     public void setMagneticFieldY(double magneticFieldY) {
-        this.magneticFieldY = magneticFieldY;
+        this.magneticFieldY = formatDouble(magneticFieldY);
     }
 
     public double getMagneticFieldZ() {
@@ -289,7 +291,7 @@ public class SensorReading {
     }
 
     public void setMagneticFieldZ(double magneticFieldZ) {
-        this.magneticFieldZ = magneticFieldZ;
+        this.magneticFieldZ = formatDouble(magneticFieldZ);
     }
 
     public double getProximity() {
@@ -297,7 +299,8 @@ public class SensorReading {
     }
 
     public void setProximity(double proximity) {
-        this.proximity = proximity;
+
+        this.proximity = formatDouble(proximity);
     }
 
     public boolean isImInTram() {
@@ -306,5 +309,10 @@ public class SensorReading {
 
     public void setImInTram(boolean imInTram) {
         this.imInTram = imInTram;
+    }
+
+    private double formatDouble(double number) {
+        String formattedString = String.format(Locale.US, "%.3f", number);
+        return Double.valueOf(formattedString);
     }
 }
