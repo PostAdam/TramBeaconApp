@@ -36,7 +36,6 @@ public class SensorReading {
     private double proximity;
     private boolean imInTram;
 
-
     public String getNearestBeaconId() {
         return NearestBeaconId;
     }

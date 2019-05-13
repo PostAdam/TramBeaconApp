@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
 import android.widget.Switch;
@@ -48,33 +49,13 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     private LocationManager locationManager;
     private BroadcastReceiver broadcastReceiver;
 
-    private double ax, ay, az;
-    private double gx, gy, gz;
-    private float numberOfSteps;
-    private float stepDetector;
-    private double gravityX, gravityY, gravityZ;
-    private double rotationVecX, rotationVecY, rotationVecZ;
-
-    private double light;
-    private double pressure;
-
-    private double gameRotationVecX, gameRotationVecY, gameRotationVecZ;
-    private double geomagneticRotationVecX, geomagneticRotationVecY, geomagneticRotationVecZ;
-    private double magneticFieldX, magneticFieldY, magneticFieldZ;
-    private double proximity;
-
-    private double longitude, latitude;
-    private int batteryLevel;
+    private SensorReading sensorReading;
+    private ArrayList<SensorReading> readingsJsonArray = new ArrayList<SensorReading>();
+    private int postCounter = 0;
 
     private Switch simpleSwitch;
-    private boolean imInTram;
-
     private BeaconData beaconData;
-
-    private int postCounter = 0;
     private TextView postCounterTextView;
-
-    private ArrayList<SensorReading> readingsJsonArray = new ArrayList<SensorReading>();
 
     private static final String JWT_PREFERENCES = "jwtPreferences";
     private static final String TOKEN_FIELD = "token";
@@ -85,12 +66,16 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensors);
 
+        sensorReading = new SensorReading();
+        sensorReading.setAccelerometerUnit("m/s^2");
+        sensorReading.setGyroscopeUnit("rad/s");
+        sensorReading.setLocationUnit("dd");
 
         preferences = getSharedPreferences(JWT_PREFERENCES, MODE_PRIVATE);
 
         postCounterTextView = findViewById(R.id.postCounter);
         postCounterTextView.setText(String.valueOf(postCounter));
-        
+
         setUpSwitch();
         setUpBackButton();
         setUpSensors();
@@ -99,8 +84,8 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
         try {
             beaconData = (BeaconData) MainActivity.beaconList.getAdapter().getItem(0);
-        } catch (Exception e) {
-            System.out.print(e.getMessage());
+        } catch (Exception ex) {
+            Log.e("Beacon", ex.getMessage());
             beaconData = new BeaconData("No Beacon here", "");
         }
 
@@ -129,75 +114,74 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     @Override
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            ax = event.values[0];
-            ay = event.values[1];
-            az = event.values[2];
+            sensorReading.setaX(event.values[0]);
+            sensorReading.setaY(event.values[1]);
+            sensorReading.setaZ(event.values[2]);
         }
         if (event.sensor.getType() == Sensor.TYPE_GYROSCOPE) {
-            gx = event.values[0];
-            gy = event.values[1];
-            gz = event.values[2];
+            sensorReading.setgX(event.values[0]);
+            sensorReading.setgY(event.values[1]);
+            sensorReading.setgZ(event.values[2]);
         }
 
         if (event.sensor.getType() == Sensor.TYPE_STEP_COUNTER) {
-            numberOfSteps = event.values[0];
+            sensorReading.setNumberOfSteps(event.values[0]);
         }
 
         if (event.sensor.getType() == Sensor.TYPE_GRAVITY) {
-            gravityX = event.values[0];
-            gravityY = event.values[1];
-            gravityZ = event.values[2];
+            sensorReading.setGravityX(event.values[0]);
+            sensorReading.setGravityY(event.values[1]);
+            sensorReading.setGravityZ(event.values[2]);
         }
 
         if (event.sensor.getType() == Sensor.TYPE_ROTATION_VECTOR) {
-            rotationVecX = event.values[0];
-            rotationVecY = event.values[1];
-            rotationVecZ = event.values[2];
+            sensorReading.setRotationX(event.values[0]);
+            sensorReading.setRotationY(event.values[1]);
+            sensorReading.setRotationZ(event.values[2]);
         }
 
         if (event.sensor.getType() == Sensor.TYPE_STEP_DETECTOR) {
-            stepDetector = event.values[0];
+            sensorReading.setStepDetector(event.values[0]);
         }
 
         if (event.sensor.getType() == Sensor.TYPE_LIGHT) {
-            light = event.values[0];
+            sensorReading.setLight(event.values[0]);
         }
 
         if (event.sensor.getType() == Sensor.TYPE_PRESSURE) {
-            pressure = event.values[0];
+            sensorReading.setPressure(event.values[0]);
         }
 
         if (event.sensor.getType() == Sensor.TYPE_GAME_ROTATION_VECTOR) {
-            gameRotationVecX = event.values[0];
-            gameRotationVecY = event.values[1];
-            gameRotationVecZ = event.values[2];
+            sensorReading.setGameRotationX(event.values[0]);
+            sensorReading.setGameRotationY(event.values[1]);
+            sensorReading.setGameRotationZ(event.values[2]);
         }
 
         if (event.sensor.getType() == Sensor.TYPE_GEOMAGNETIC_ROTATION_VECTOR) {
-            geomagneticRotationVecX = event.values[0];
-            geomagneticRotationVecY = event.values[1];
-            geomagneticRotationVecZ = event.values[2];
+            sensorReading.setGeomagneticRotationX(event.values[0]);
+            sensorReading.setGeomagneticRotationY(event.values[1]);
+            sensorReading.setGeomagneticRotationZ(event.values[2]);
         }
 
         if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-            magneticFieldX = event.values[0];
-            magneticFieldY = event.values[1];
-            magneticFieldZ = event.values[2];
+            sensorReading.setMagneticFieldX(event.values[0]);
+            sensorReading.setMagneticFieldY(event.values[1]);
+            sensorReading.setMagneticFieldZ(event.values[2]);
         }
 
         if (event.sensor.getType() == Sensor.TYPE_PROXIMITY) {
-            proximity = event.values[0];
+            sensorReading.setProximity(event.values[0]);
         }
     }
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onDestroy() {
+        super.onDestroy();
         sensorManager.unregisterListener(this);
     }
 
@@ -274,10 +258,10 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
     private void setUpSwitch() {
         simpleSwitch = findViewById(R.id.simpleSwitch);
-        imInTram = simpleSwitch.isChecked();
+        sensorReading.setImInTram(simpleSwitch.isChecked());
         simpleSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                imInTram = isChecked;
+                sensorReading.setImInTram(isChecked);
             }
         });
     }
@@ -285,8 +269,8 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     private class PhoneLocationListener implements LocationListener {
         @Override
         public void onLocationChanged(Location loc) {
-            latitude = loc.getLatitude();
-            longitude = loc.getLongitude();
+            sensorReading.setLatitude(loc.getLatitude());
+            sensorReading.setLongitude(loc.getLongitude());
         }
 
         @Override
@@ -303,29 +287,18 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     }
 
     private class HTTPAsyncTask extends AsyncTask<Void, Void, Void> {
-
-        public HTTPAsyncTask() {
-        }
-
-        @Override
-        protected void onPreExecute() {
-            //postCounterTextView.setText(String.valueOf(++postCounter));
-        }
-
         @Override
         protected Void doInBackground(Void... voids) {
-
             HttpPostPackage();
-
             return null;
         }
     }
 
 
     private void HttpPostPackage() {
-
-        if(this.readingsJsonArray.size() < 10) {
-            this.readingsJsonArray.add(buildSensorReading());
+        if (this.readingsJsonArray.size() < 10) {
+            sensorReading.setNearestBeaconId(beaconData.getBeaconId());
+            this.readingsJsonArray.add(sensorReading);
 
         } else {
             String json = new Gson().toJson(readingsJsonArray);
@@ -336,7 +309,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             call.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
-                    if(response.code() == 201){
+                    if (response.code() == 201) {
                         postCounterTextView.setText(String.valueOf(++postCounter));
                     } else {
                         Toast.makeText(SensorsActivity.this, "Failed while sending readings", Toast.LENGTH_LONG).show();
@@ -351,56 +324,14 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
             this.readingsJsonArray.clear();
         }
-
     }
-
-    private SensorReading buildSensorReading() {
-        SensorReading reading = new SensorReading();
-        reading.setNearestBeaconId(beaconData.getBeaconId());
-        reading.setaX(ax);
-        reading.setaY(ay);
-        reading.setaZ(az);
-        reading.setAccelerometerUnit("m/s^2");
-        reading.setgX(gx);
-        reading.setgY(gy);
-        reading.setgZ(gz);
-        reading.setGyroscopeUnit("rad/s");
-        reading.setLatitude(latitude);
-        reading.setLongitude(longitude);
-        reading.setLocationUnit("dd");
-        reading.setBatteryLevel(batteryLevel);
-        reading.setNumberOfSteps(numberOfSteps);
-        reading.setStepDetector(stepDetector);
-        reading.setGravityX(gravityX);
-        reading.setGravityY(gravityY);
-        reading.setGravityZ(gravityZ);
-        reading.setRotationX(rotationVecX);
-        reading.setRotationY(rotationVecY);
-        reading.setRotationZ(rotationVecZ);
-        reading.setLight(light);
-        reading.setPressure(pressure);
-        reading.setGameRotationX(gameRotationVecX);
-        reading.setGameRotationY(gameRotationVecY);
-        reading.setGameRotationZ(gameRotationVecZ);
-        reading.setGeomagneticRotationX(geomagneticRotationVecX);
-        reading.setGeomagneticRotationY(geomagneticRotationVecY);
-        reading.setGeomagneticRotationZ(geomagneticRotationVecZ);
-        reading.setMagneticFieldX(magneticFieldX);
-        reading.setMagneticFieldY(magneticFieldY);
-        reading.setMagneticFieldZ(magneticFieldZ);
-        reading.setProximity(proximity);
-        reading.setImInTram(imInTram);
-
-        return reading;
-    }
-
 
     private class BatteryBroadcastReceiver extends BroadcastReceiver {
         private final static String BATTERY_LEVEL = "level";
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            batteryLevel = intent.getIntExtra(BATTERY_LEVEL, 0);
+            sensorReading.setBatteryLevel(intent.getIntExtra(BATTERY_LEVEL, 0));
         }
     }
 }
