@@ -1,9 +1,12 @@
 package com.pp.model;
 
-import java.util.Locale;
+import java.io.Serializable;
+import java.sql.Timestamp;
+import java.util.Date;
 
-public class SensorReading {
+public class SensorReading implements Serializable {
     private String NearestBeaconId;
+    private Timestamp timeStamp;
     private double aX;
     private double aY;
     private double aZ;
@@ -315,5 +318,13 @@ public class SensorReading {
         //String formattedString = String.format(Locale.US, "%.9f", number);
         String formattedString = Double.toString(number).replace(",", ".");
         return Double.valueOf(formattedString);
+    }
+
+    public Timestamp getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(Timestamp timeStamp) {
+        this.timeStamp = timeStamp;
     }
 }

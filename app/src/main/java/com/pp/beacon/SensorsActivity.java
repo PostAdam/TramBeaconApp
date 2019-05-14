@@ -32,9 +32,13 @@ import com.pp.model.SensorReading;
 import com.pp.retrofit.RetrofitClientInstance;
 import com.pp.retrofit.SensorsReadingService;
 
+import org.apache.commons.lang3.SerializationUtils;
 import org.json.JSONObject;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -114,6 +118,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        sensorReading.setTimeStamp(new Timestamp(new Date().getTime()));
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             sensorReading.setaX(event.values[0]);
             sensorReading.setaY(event.values[1]);
@@ -299,7 +304,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     private void HttpPostPackage() {
         if (this.readingsJsonArray.size() < 10) {
             sensorReading.setNearestBeaconId(beaconData.getBeaconId());
-            this.readingsJsonArray.add(sensorReading);
+            this.readingsJsonArray.add(SerializationUtils.clone(sensorReading));
 
         } else {
             String json = new Gson().toJson(readingsJsonArray);

@@ -57,4 +57,5 @@ dependencies {
     implementation 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     implementation 'com.crashlytics.sdk.android:crashlytics:2.10.0'
+    implementation 'org.apache.commons:commons-lang3:3.6'
 }
