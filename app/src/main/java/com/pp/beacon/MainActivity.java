@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ListView;
 
 import com.estimote.coresdk.common.requirements.SystemRequirementsChecker;
@@ -12,6 +11,7 @@ import com.estimote.coresdk.observation.region.RegionUtils;
 import com.estimote.coresdk.observation.region.beacon.BeaconRegion;
 import com.estimote.coresdk.recognition.packets.Beacon;
 import com.estimote.coresdk.service.BeaconManager;
+import com.pp.model.BeaconData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
     private BeaconRegion region;
     public static ListView beaconList;
     private AppCompatActivity appCompatActivity = this;
-    public static EditText usernameText;
+    private final UUID BEACON_UUID = UUID.fromString("B9407F30-F5F8-466E-AFF9-25556B57FE6D");
 
     // endregion
 
@@ -38,9 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         beaconList = findViewById(R.id.beaconsList);
         beaconManager = new BeaconManager(this);
-        region = new BeaconRegion("ranged region",
-                UUID.fromString("B9407F30-F5F8-466E-AFF9-25556B57FE6D"), null, null);
-
+        region = new BeaconRegion("ranged region", BEACON_UUID, null, null);
         beaconManager.setRangingListener(new BeaconManager.BeaconRangingListener() {
             @Override
             public void onBeaconsDiscovered(BeaconRegion region, List<Beacon> list) {

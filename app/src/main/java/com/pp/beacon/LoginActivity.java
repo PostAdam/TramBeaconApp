@@ -20,7 +20,6 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-
 public class LoginActivity extends AppCompatActivity {
     private EditText passwordEdt;
     private EditText emailEdt;
@@ -35,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         preferences = getSharedPreferences(JWT_PREFERENCES, MODE_PRIVATE);
-        if(preferences.contains(TOKEN_FIELD)) {
+        if (preferences.contains(TOKEN_FIELD)) {
             //check if token didn't expire
             startActivity(new Intent(this, MainActivity.class));
         }
@@ -58,7 +57,7 @@ public class LoginActivity extends AppCompatActivity {
         call.enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
-                if(response.code() == 200) {
+                if (response.code() == 200) {
                     String token = response.body();
                     SharedPreferences.Editor editor = preferences.edit();
                     editor.putString(TOKEN_FIELD, token);

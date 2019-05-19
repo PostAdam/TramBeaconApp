@@ -28,18 +28,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.pp.model.BeaconData;
 import com.pp.model.SensorReading;
 import com.pp.retrofit.RetrofitClientInstance;
 import com.pp.retrofit.SensorsReadingService;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.json.JSONObject;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -55,7 +53,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     private BroadcastReceiver broadcastReceiver;
 
     private SensorReading sensorReading;
-    private ArrayList<SensorReading> readingsJsonArray = new ArrayList<SensorReading>();
+    private ArrayList<SensorReading> readingsJsonArray = new ArrayList<>();
     private int postCounter = 0;
 
     private Switch simpleSwitch;
@@ -189,6 +187,7 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     protected void onDestroy() {
         super.onDestroy();
         sensorManager.unregisterListener(this);
+        unregisterReceiver(broadcastReceiver);
     }
 
     private boolean isNetworkConnectionEnabled() {
@@ -202,7 +201,6 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
     private void callAsynchronousTask() {
         final Handler handler = new Handler();
         Timer timer = new Timer();
-        final ArrayList<JSONObject> jsonObjects = new ArrayList<>();
         TimerTask doAsynchronousTask = new TimerTask() {
             @Override
             public void run() {
@@ -300,7 +298,6 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         }
     }
 
-
     private void HttpPostPackage() {
         if (this.readingsJsonArray.size() < 10) {
             sensorReading.setNearestBeaconId(beaconData.getBeaconId());
@@ -324,7 +321,6 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
                 @Override
                 public void onFailure(Call<Void> call, Throwable t) {
-
                 }
             });
 

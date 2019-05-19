@@ -7,16 +7,16 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.pp.model.BeaconData;
+
 import java.util.ArrayList;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public class ListViewAdapter extends BaseAdapter {
     private Context context;
     private ArrayList<BeaconData> items;
-
-    public ListViewAdapter(Context context, ArrayList<BeaconData> items) {
-        this.context = context;
-        this.items = items;
-    }
 
     @Override
     public int getCount() {

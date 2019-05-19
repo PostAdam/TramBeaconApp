@@ -33,30 +33,30 @@ public class RegisterActivity extends AppCompatActivity {
     @BindView(R.id.passwordEDT)
     public EditText passwordEDT;
 
-        @Override
-        protected void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            setContentView(R.layout.activity_register);
-            ButterKnife.bind(this);
-        }
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_register);
+        ButterKnife.bind(this);
+    }
 
-        public void register(View view) throws JSONException {
-            User user = new User(nameEDT.getText().toString(), lastnameEDT.getText().toString(), emaliEDT.getText().toString(), passwordEDT.getText().toString());
+    public void register(View view) throws JSONException {
+        User user = new User(nameEDT.getText().toString(), lastnameEDT.getText().toString(), emaliEDT.getText().toString(), passwordEDT.getText().toString());
 
-            String json = new Gson().toJson(user);
-            RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
-            AuthService service = RetrofitClientInstance.getRetrofitInstance().create(AuthService.class);
-            Call<Void> call = service.register(body);
-            call.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
-                }
+        String json = new Gson().toJson(user);
+        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"), json);
+        AuthService service = RetrofitClientInstance.getRetrofitInstance().create(AuthService.class);
+        Call<Void> call = service.register(body);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                startActivity(new Intent(RegisterActivity.this, LoginActivity.class));
+            }
 
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    Toast.makeText(RegisterActivity.this, "Register failed!", Toast.LENGTH_LONG).show();
-                }
-            });
-        }
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(RegisterActivity.this, "Register failed!", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 }
