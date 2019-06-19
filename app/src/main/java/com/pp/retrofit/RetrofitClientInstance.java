@@ -11,12 +11,11 @@ public class RetrofitClientInstance {
     private static final String BASE_URL = "http://itram.azurewebsites.net/api/";
 
     public static Retrofit getRetrofitInstance() {
-     if(retrofit == null) {
-         retrofit = new retrofit2.Retrofit.Builder().baseUrl(BASE_URL).client(GetClient()).addConverterFactory(GsonConverterFactory.create()).build();
+        if (retrofit == null) {
+            retrofit = new retrofit2.Retrofit.Builder().baseUrl(BASE_URL).client(GetClient()).addConverterFactory(GsonConverterFactory.create()).build();
+        }
 
-     }
-
-     return retrofit;
+        return retrofit;
     }
 
     private static OkHttpClient GetClient() {
