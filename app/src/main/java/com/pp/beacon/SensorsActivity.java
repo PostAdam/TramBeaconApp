@@ -1,5 +1,8 @@
 package com.pp.beacon;
 
+import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +21,9 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -35,6 +41,7 @@ import com.pp.retrofit.BeaconTokenService;
 import com.pp.retrofit.RetrofitClientInstance;
 import com.pp.retrofit.SensorsReadingService;
 import com.pp.services.BluetoothService;
+import com.pp.services.Constants;
 import com.pp.services.FileService;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -106,13 +113,14 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
                 // get beacon's mac address
                 String beaconMacAddress = MainActivity.beacons.get(0).getMacAddress().toStandardString();
                 // send token to beacon
-                BluetoothService.sendFile(fileUri.toString(), beaconMacAddress);
+                BluetoothService bluetoothService = new BluetoothService(beaconMacAddress, fileUri);
 
                 System.out.println("Data sent successfully");
                 // get confirmation
                 // if failed send again
                 // repeat till confirmed
             }
+
 
             @Override
             public void onFailure(Call<List<BeaconToken>> call, Throwable t) {
