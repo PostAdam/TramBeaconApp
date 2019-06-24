@@ -29,15 +29,21 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.pp.model.BeaconData;
+import com.pp.model.BeaconToken;
 import com.pp.model.SensorReading;
+import com.pp.retrofit.BeaconTokenService;
 import com.pp.retrofit.RetrofitClientInstance;
 import com.pp.retrofit.SensorsReadingService;
+import com.pp.services.BluetoothService;
+import com.pp.services.FileService;
 
 import org.apache.commons.lang3.SerializationUtils;
 
+import java.net.URI;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -78,6 +84,32 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
 
         postCounterTextView = findViewById(R.id.postCounter);
         postCounterTextView.setText(String.valueOf(postCounter));
+
+        // get beacon token from server
+        BeaconTokenService service = RetrofitClientInstance.getRetrofitInstance().create(BeaconTokenService.class);
+        String token = "Bearer " + preferences.getString(TOKEN_FIELD, "");
+        Call<List<BeaconToken>> call = service.getAllBeaconTokens(token);
+        call.enqueue(new Callback<List<BeaconToken>>() {
+            @Override
+            public void onResponse(Call<List<BeaconToken>> call, Response<List<BeaconToken>> response) {
+                List<BeaconToken> beaconTokens = response.body();
+
+                //save token to file
+                URI fileUri = FileService.createAndWriteFile(getApplicationContext().getCacheDir(), "beaconTokens", BeaconToken.tokensToString(beaconTokens));
+                // get beacon's mac address
+                String beaconMacAddress = MainActivity.beacons.get(0).getMacAddress().toStandardString();
+                // send token to beacon
+                BluetoothService bluetoothService = new BluetoothService(beaconMacAddress, fileUri);
+                // get confirmation
+                // if failed send again
+                // repeat till confirmed
+            }
+
+            @Override
+            public void onFailure(Call<List<BeaconToken>> call, Throwable t) {
+                Toast.makeText(SensorsActivity.this, "Failed to fetch tokens!", Toast.LENGTH_LONG).show();
+            }
+        });
 
         setUpSwitch();
         setUpBackButton();

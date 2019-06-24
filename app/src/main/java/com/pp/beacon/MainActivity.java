@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private BeaconManager beaconManager;
     private BeaconRegion region;
     public static ListView beaconList;
+    public static List<Beacon> beacons;
     private AppCompatActivity appCompatActivity = this;
     private final UUID BEACON_UUID = UUID.fromString("B9407F30-F5F8-466E-AFF9-25556B57FE6D");
 
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
         beaconManager.setRangingListener(new BeaconManager.BeaconRangingListener() {
             @Override
             public void onBeaconsDiscovered(BeaconRegion region, List<Beacon> list) {
+                beacons = list;
                 ListViewAdapter adapter
                         = new ListViewAdapter(appCompatActivity, generateBeaconsDataList(list));
                 beaconList.setAdapter(adapter);
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
     // region Auxiliary Methods
 
     private ArrayList<BeaconData> generateBeaconsDataList(List<Beacon> beacons) {
-        ArrayList<BeaconData> beaconsData = new ArrayList<BeaconData>();
+        ArrayList<BeaconData> beaconsData = new ArrayList<>();
 
         for (Beacon beacon : beacons) {
             String beaconId = beacon.getUniqueKey();

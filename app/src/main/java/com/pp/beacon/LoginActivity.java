@@ -41,8 +41,6 @@ public class LoginActivity extends AppCompatActivity {
 
         passwordEdt = findViewById(R.id.passwordText);
         emailEdt = findViewById(R.id.emailText);
-
-
     }
 
     public void login(View view) throws JSONException {
