@@ -1,25 +1,9 @@
 package com.pp.model;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
-
 import lombok.Getter;
 
 @Getter
-public class SensorReading implements Serializable {
-    private String NearestBeaconId;
-    private Timestamp timeStamp;
-    private double aX;
-    private double aY;
-    private double aZ;
-    private String accelerometerUnit;
-    private double gX;
-    private double gY;
-    private double gZ;
-    private String GyroscopeUnit;
-    private double latitude;
-    private double longitude;
-    private String locationUnit;
+public class SensorReading extends SensorReadingBase {
     private int batteryLevel;
     private float numberOfSteps;
     private float stepDetector;
@@ -42,54 +26,6 @@ public class SensorReading implements Serializable {
     private double magneticFieldZ;
     private double proximity;
     private boolean imInTram;
-
-    public void setNearestBeaconId(String nearestBeaconId) {
-        NearestBeaconId = nearestBeaconId;
-    }
-
-    public void setaX(double aX) {
-        this.aX = formatDouble(aX);
-    }
-
-    public void setaY(double aY) {
-        this.aY = formatDouble(aY);
-    }
-
-    public void setaZ(double aZ) {
-        this.aZ = formatDouble(aZ);
-    }
-
-    public void setAccelerometerUnit(String accelerometerUnit) {
-        this.accelerometerUnit = accelerometerUnit;
-    }
-
-    public void setgX(double gX) {
-        this.gX = formatDouble(gX);
-    }
-
-    public void setgY(double gY) {
-        this.gY = formatDouble(gY);
-    }
-
-    public void setgZ(double gZ) {
-        this.gZ = formatDouble(gZ);
-    }
-
-    public void setGyroscopeUnit(String gyroscopeUnit) {
-        GyroscopeUnit = gyroscopeUnit;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = formatDouble(latitude);
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = formatDouble(longitude);
-    }
-
-    public void setLocationUnit(String locationUnit) {
-        this.locationUnit = locationUnit;
-    }
 
     public void setBatteryLevel(int batteryLevel) {
         this.batteryLevel = batteryLevel;
@@ -177,14 +113,5 @@ public class SensorReading implements Serializable {
 
     public void setImInTram(boolean imInTram) {
         this.imInTram = imInTram;
-    }
-
-    public void setTimeStamp(Timestamp timeStamp) {
-        this.timeStamp = timeStamp;
-    }
-
-    private double formatDouble(double number) {
-        String formattedString = Double.toString(number).replace(",", ".");
-        return Double.valueOf(formattedString);
     }
 }
