@@ -1,8 +1,5 @@
 package com.pp.beacon;
 
-import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,9 +18,6 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -41,7 +35,6 @@ import com.pp.retrofit.BeaconTokenService;
 import com.pp.retrofit.RetrofitClientInstance;
 import com.pp.retrofit.SensorsReadingService;
 import com.pp.services.BluetoothService;
-import com.pp.services.Constants;
 import com.pp.services.FileService;
 
 import org.apache.commons.lang3.SerializationUtils;
@@ -92,7 +85,6 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
         postCounterTextView = findViewById(R.id.postCounter);
         postCounterTextView.setText(String.valueOf(postCounter));
 
-
         // get beacon token from server
         BeaconTokenService service = RetrofitClientInstance.getRetrofitInstance().create(BeaconTokenService.class);
         String token = "Bearer " + preferences.getString(TOKEN_FIELD, "");
@@ -102,32 +94,22 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             public void onResponse(Call<List<BeaconToken>> call, Response<List<BeaconToken>> response) {
                 List<BeaconToken> beaconTokens = response.body();
 
-                StringBuilder fileContent = new StringBuilder();
-                for (BeaconToken beaconToken : beaconTokens) {
-                    fileContent.append(BeaconToken.bytesToHex(beaconToken.getToken().getBytes()));
-                    fileContent.append("\n");
-                }
-
                 //save token to file
-                URI fileUri = FileService.createAndWriteFile(getApplicationContext().getCacheDir(), "beaconTokens", fileContent.toString());
+                URI fileUri = FileService.createAndWriteFile(getApplicationContext().getCacheDir(), "beaconTokens", BeaconToken.tokensToString(beaconTokens));
                 // get beacon's mac address
                 String beaconMacAddress = MainActivity.beacons.get(0).getMacAddress().toStandardString();
                 // send token to beacon
                 BluetoothService bluetoothService = new BluetoothService(beaconMacAddress, fileUri);
-
-                System.out.println("Data sent successfully");
                 // get confirmation
                 // if failed send again
                 // repeat till confirmed
             }
-
 
             @Override
             public void onFailure(Call<List<BeaconToken>> call, Throwable t) {
                 Toast.makeText(SensorsActivity.this, "Failed to fetch tokens!", Toast.LENGTH_LONG).show();
             }
         });
-
 
         setUpSwitch();
         setUpBackButton();
@@ -142,10 +124,9 @@ public class SensorsActivity extends AppCompatActivity implements SensorEventLis
             beaconData = new BeaconData("No Beacon here", "");
         }
 
-        // TODO: uncomment when done
-        /*if (isNetworkConnectionEnabled()) {
+        if (isNetworkConnectionEnabled()) {
             callAsynchronousTask();
-        }*/
+        }
     }
 
     @Override

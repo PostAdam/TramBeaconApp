@@ -1,5 +1,7 @@
 package com.pp.model;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -18,5 +20,15 @@ public class BeaconToken {
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
         }
         return new String(hexChars);
+    }
+
+    public static String tokensToString(List<BeaconToken> beaconTokens) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (BeaconToken beaconToken : beaconTokens) {
+            stringBuilder.append(bytesToHex(beaconToken.token.getBytes()));
+            stringBuilder.append("\n");
+        }
+
+        return stringBuilder.toString();
     }
 }

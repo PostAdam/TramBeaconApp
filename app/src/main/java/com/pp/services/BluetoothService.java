@@ -5,12 +5,6 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.support.v4.app.FragmentActivity;
-import android.widget.Toast;
-
-import com.pp.beacon.R;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -53,7 +47,6 @@ public class BluetoothService {
     }
 
     public synchronized void start() {
-
         if (mConnectThread != null) {
             mConnectThread.cancel();
             mConnectThread = null;
@@ -72,11 +65,9 @@ public class BluetoothService {
             mInsecureAcceptThread = new AcceptThread(false);
             mInsecureAcceptThread.start();
         }
-
     }
 
     public synchronized void connect(BluetoothDevice device, boolean secure) {
-
         if (mState == STATE_CONNECTING) {
             if (mConnectThread != null) {
                 mConnectThread.cancel();
@@ -91,13 +82,10 @@ public class BluetoothService {
 
         mConnectThread = new ConnectThread(device, secure);
         mConnectThread.start();
-
     }
 
     public synchronized void connected(BluetoothSocket socket, BluetoothDevice
             device, final String socketType) {
-
-
         if (mConnectThread != null) {
             mConnectThread.cancel();
             mConnectThread = null;
@@ -123,11 +111,9 @@ public class BluetoothService {
         bundle.putString(Constants.DEVICE_NAME, device.getName());
 
         write(fileUri);
-
     }
 
     public synchronized void stop() {
-
         if (mConnectThread != null) {
             mConnectThread.cancel();
             mConnectThread = null;
@@ -148,7 +134,6 @@ public class BluetoothService {
             mInsecureAcceptThread = null;
         }
         mState = STATE_NONE;
-
     }
 
     public void write(URI fileUri) {
