@@ -75,6 +75,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(this, SensorsActivity.class));
     }
 
+    public void switchActivityToDetection(View view) {
+        startActivity(new Intent(this, TramTravelDetectionActivity.class));
+    }
+
     // endregion
 
     // region Auxiliary Methods
