@@ -12,7 +12,6 @@
         android:layout_height="34dp"
         android:gravity="center"
         android:text="Number of measurements: " />
-
     <TextView
         android:id="@+id/postCounter"
         android:layout_width="70dp"
@@ -28,7 +27,6 @@
         android:layout_below="@+id/PostCounter"
         android:gravity="center"
         android:text="Am I In Tram: " />
-
     <TextView
         android:id="@+id/amIInTram"
         android:layout_width="70dp"
@@ -36,5 +34,39 @@
         android:layout_below="@+id/PostCounter"
         android:layout_marginStart="0dp"
         android:layout_toEndOf="@+id/AmIInTram"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/NearestBeaconId"
+        android:layout_width="130dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/AmIInTram"
+        android:gravity="center"
+        android:text="BeaconId: " />
+    <TextView
+        android:id="@+id/nearestBeaconId"
+        android:layout_width="281dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/AmIInTram"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_toEndOf="@+id/NearestBeaconId"
+        android:gravity="center" />
+
+    <TextView
+        android:id="@+id/NearestBeaconProximity"
+        android:layout_width="130dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/NearestBeaconId"
+        android:gravity="center"
+        android:text="Proximity: " />
+    <TextView
+        android:id="@+id/nearestBeaconProximity"
+        android:layout_width="281dp"
+        android:layout_height="34dp"
+        android:layout_below="@+id/NearestBeaconId"
+        android:layout_marginStart="0dp"
+        android:layout_marginTop="0dp"
+        android:layout_toEndOf="@+id/NearestBeaconId"
         android:gravity="center" />
 </RelativeLayout>

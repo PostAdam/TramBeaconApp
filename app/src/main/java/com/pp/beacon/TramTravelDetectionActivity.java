@@ -17,14 +17,17 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.estimote.coresdk.common.requirements.SystemRequirementsChecker;
+import com.estimote.coresdk.observation.region.RegionUtils;
+import com.estimote.coresdk.observation.region.beacon.BeaconRegion;
+import com.estimote.coresdk.recognition.packets.Beacon;
+import com.estimote.coresdk.service.BeaconManager;
 import com.google.gson.Gson;
 import com.google.gson.internal.LinkedTreeMap;
-import com.pp.model.BeaconData;
 import com.pp.model.BeaconToken;
 import com.pp.model.SensorReadingBase;
 import com.pp.retrofit.BeaconTokenService;
@@ -40,6 +43,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -50,20 +54,29 @@ import retrofit2.Response;
 public class TramTravelDetectionActivity extends AppCompatActivity implements SensorEventListener {
     // region Privates
 
-    private SensorManager sensorManager;
+    private BeaconManager beaconManager;
+    private BeaconRegion region;
+    private final UUID BEACON_UUID = UUID.fromString("B9407F30-F5F8-466E-AFF9-25556B57FE6D");
+    private Beacon nearestBeacon;
 
+    private SensorManager sensorManager;
     private SensorReadingBase sensorReading;
-    private BeaconData beaconData;
+
     private TextView postCounterTextView;
     private TextView amIInTramTextView;
-    private final String raspberryMacAddress = "00:34:DA:42:FC:5F";
-    //    private final String raspberryMacAddress = "CC:94:9A:0F:8F:B1";
+    private TextView beaconIdTextView;
+    private TextView beaconProximityTextView;
+
+    //    private final String raspberryMacAddress = "00:34:DA:42:FC:5F";
+        private final String raspberryMacAddress = "B8:27:EB:24:74:91";
+//    private final String raspberryMacAddress = "CC:94:9A:0F:8F:B1";
     private int postCounter = 0;
     private boolean amIInTram = false;
 
     private static final String JWT_PREFERENCES = "jwtPreferences";
     private static final String TOKEN_FIELD = "token";
     private SharedPreferences preferences;
+    private boolean isPostReadingsTaskStarted;
 
     // endregion
 
@@ -76,8 +89,31 @@ public class TramTravelDetectionActivity extends AppCompatActivity implements Se
         preferences = getSharedPreferences(JWT_PREFERENCES, MODE_PRIVATE);
         postCounterTextView = findViewById(R.id.postCounter);
         amIInTramTextView = findViewById(R.id.amIInTram);
+        beaconIdTextView = findViewById(R.id.nearestBeaconId);
+        beaconProximityTextView = findViewById(R.id.nearestBeaconProximity);
+
         postCounterTextView.setText(String.valueOf(postCounter));
         amIInTramTextView.setText(String.valueOf(amIInTram));
+
+        beaconManager = new BeaconManager(this);
+        region = new BeaconRegion("ranged region", BEACON_UUID, null, null);
+        beaconManager.setRangingListener(new BeaconManager.BeaconRangingListener() {
+            @Override
+            public void onBeaconsDiscovered(BeaconRegion region, List<Beacon> list) {
+                for (Beacon beacon : list) {
+                    if (beacon.getMacAddress().toStandardString().equals(raspberryMacAddress)) {
+                        nearestBeacon = beacon;
+                        beaconIdTextView.setText(String.valueOf(beacon.getUniqueKey()));
+                        beaconProximityTextView.setText(String.valueOf(RegionUtils.computeAccuracy(beacon)));
+
+                        if (isNetworkConnectionEnabled() && !isPostReadingsTaskStarted) {
+                            isPostReadingsTaskStarted = true;
+                            callAsynchronousTask();
+                        }
+                    }
+                }
+            }
+        });
 
         BeaconTokenService service = RetrofitClientInstance.getRetrofitInstance().create(BeaconTokenService.class);
         String token = "Bearer " + preferences.getString(TOKEN_FIELD, "");
@@ -99,22 +135,31 @@ public class TramTravelDetectionActivity extends AppCompatActivity implements Se
         setUpBackButton();
         setUpSensors();
         setUpLocalization();
-
-        try {
-            beaconData = (BeaconData) MainActivity.beaconList.getAdapter().getItem(0);
-        } catch (Exception ex) {
-            Log.e("Beacon", ex.getMessage());
-            beaconData = new BeaconData("No Beacon here", "");
-        }
-
-        if (isNetworkConnectionEnabled()) {
-            callAsynchronousTask();
-        }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+    }
+
+    @Override
+    protected void onPause() {
+        beaconManager.stopRanging(region);
+
+        super.onPause();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SystemRequirementsChecker.checkWithDefaultDialogs(this);
+
+        beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
+            @Override
+            public void onServiceReady() {
+                beaconManager.startRanging(region);
+            }
+        });
     }
 
     @Override
@@ -175,7 +220,7 @@ public class TramTravelDetectionActivity extends AppCompatActivity implements Se
             }
         };
         // TODO: set delay and period
-        timer.schedule(doAsynchronousTask, 3000, 5000); //execute in every 5000 ms
+        timer.schedule(doAsynchronousTask, 0, 2000); //execute in every 5000 ms
     }
 
     private void setUpBackButton() {
@@ -234,7 +279,11 @@ public class TramTravelDetectionActivity extends AppCompatActivity implements Se
     }
 
     private void HttpPostPackage() {
-        sensorReading.setNearestBeaconId(beaconData.getBeaconId());
+        sensorReading.setNearestBeaconId(
+                nearestBeacon != null
+                        ? nearestBeacon.getUniqueKey()
+                        : "No beacon here");
+
         sensorReading.setTimeStamp(new Timestamp(new Date().getTime()));
         ArrayList<SensorReadingBase> readings = new ArrayList<>();
         readings.add(sensorReading);

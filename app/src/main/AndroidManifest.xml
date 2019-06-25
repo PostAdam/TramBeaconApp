@@ -18,8 +18,14 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".TramTravelDetectionActivity"></activity>
-        <activity android:name=".SensorsActivity" />
+        <activity
+            android:name=".TramTravelDetectionActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".SensorsActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:screenOrientation="portrait" />
         <activity android:name=".MainActivity" />
         <activity android:name=".RegisterActivity" />
         <activity android:name=".LoginActivity">
