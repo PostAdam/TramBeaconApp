@@ -58,6 +58,8 @@ public class TramTravelDetectionActivity extends AppCompatActivity implements Se
     private BeaconRegion region;
     private final UUID BEACON_UUID = UUID.fromString("B9407F30-F5F8-466E-AFF9-25556B57FE6D");
     private Beacon nearestBeacon;
+    private Integer minor = 65535;
+    private Integer major = 65535;
 
     private SensorManager sensorManager;
     private SensorReadingBase sensorReading;
@@ -68,8 +70,8 @@ public class TramTravelDetectionActivity extends AppCompatActivity implements Se
     private TextView beaconProximityTextView;
 
     //    private final String raspberryMacAddress = "00:34:DA:42:FC:5F";
-        private final String raspberryMacAddress = "B8:27:EB:24:74:91";
-//    private final String raspberryMacAddress = "CC:94:9A:0F:8F:B1";
+    private final String raspberryMacAddress = "B8:27:EB:24:74:91";
+    //    private final String raspberryMacAddress = "CC:94:9A:0F:8F:B1";
     private int postCounter = 0;
     private boolean amIInTram = false;
 
@@ -95,26 +97,6 @@ public class TramTravelDetectionActivity extends AppCompatActivity implements Se
         postCounterTextView.setText(String.valueOf(postCounter));
         amIInTramTextView.setText(String.valueOf(amIInTram));
 
-        beaconManager = new BeaconManager(this);
-        region = new BeaconRegion("ranged region", BEACON_UUID, null, null);
-        beaconManager.setRangingListener(new BeaconManager.BeaconRangingListener() {
-            @Override
-            public void onBeaconsDiscovered(BeaconRegion region, List<Beacon> list) {
-                for (Beacon beacon : list) {
-                    if (beacon.getMacAddress().toStandardString().equals(raspberryMacAddress)) {
-                        nearestBeacon = beacon;
-                        beaconIdTextView.setText(String.valueOf(beacon.getUniqueKey()));
-                        beaconProximityTextView.setText(String.valueOf(RegionUtils.computeAccuracy(beacon)));
-
-                        if (isNetworkConnectionEnabled() && !isPostReadingsTaskStarted) {
-                            isPostReadingsTaskStarted = true;
-                            callAsynchronousTask();
-                        }
-                    }
-                }
-            }
-        });
-
         BeaconTokenService service = RetrofitClientInstance.getRetrofitInstance().create(BeaconTokenService.class);
         String token = "Bearer " + preferences.getString(TOKEN_FIELD, "");
         Call<List<BeaconToken>> call = service.getAllBeaconTokens(token);
@@ -129,6 +111,29 @@ public class TramTravelDetectionActivity extends AppCompatActivity implements Se
             @Override
             public void onFailure(Call<List<BeaconToken>> call, Throwable t) {
                 Toast.makeText(TramTravelDetectionActivity.this, "Failed to fetch tokens!", Toast.LENGTH_LONG).show();
+            }
+        });
+
+        beaconManager = new BeaconManager(this);
+        region = new BeaconRegion("ranged region", major == null && minor == null ? BEACON_UUID : null, major, minor);
+        beaconManager.setRangingListener(new BeaconManager.BeaconRangingListener() {
+            @Override
+            public void onBeaconsDiscovered(BeaconRegion region, List<Beacon> list) {
+                for (Beacon beacon : list) {
+                    if (beacon.getMacAddress().toStandardString().equals(raspberryMacAddress)) {
+                        nearestBeacon = beacon;
+                        beaconIdTextView.setText(String.valueOf(beacon.getUniqueKey()));
+                        beaconProximityTextView.setText(String.valueOf(RegionUtils.computeAccuracy(beacon)));
+
+                        major = beacon.getMajor();
+                        minor = beacon.getMinor();
+
+                        if (isNetworkConnectionEnabled() && !isPostReadingsTaskStarted) {
+                            isPostReadingsTaskStarted = true;
+                            callAsynchronousTask();
+                        }
+                    }
+                }
             }
         });
 
