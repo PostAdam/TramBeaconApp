@@ -69,4 +69,47 @@
         android:layout_marginTop="0dp"
         android:layout_toEndOf="@+id/NearestBeaconId"
         android:gravity="center" />
+
+    <TextView
+        android:id="@+id/UseLocation"
+        android:layout_width="130dp"
+        android:layout_height="34dp"
+        android:gravity="center"
+        android:layout_marginStart="0dp"
+        android:layout_below="@+id/NearestBeaconProximity"
+        android:text="Use location: "/>
+    <Switch
+        android:id="@+id/useLocationSwitch"
+        android:layout_width="70dp"
+        android:layout_height="34dp"
+        android:padding="8dp"
+        android:checked="true"
+        android:showText="true"
+        android:layout_toEndOf="@+id/UseLocation"
+        android:layout_below="@+id/NearestBeaconProximity"
+        android:paddingLeft="10dp"
+        android:textOff="N"
+        android:textOn="Y"/>
+
+
+    <TextView
+        android:id="@+id/UseNeuralNetwork"
+        android:layout_width="130dp"
+        android:layout_height="34dp"
+        android:gravity="center"
+        android:layout_marginStart="0dp"
+        android:layout_below="@+id/UseLocation"
+        android:text="Use neural net.: "/>
+    <Switch
+        android:id="@+id/useNeuralNetworkSwitch"
+        android:layout_width="70dp"
+        android:layout_height="34dp"
+        android:padding="8dp"
+        android:checked="true"
+        android:showText="true"
+        android:layout_toEndOf="@+id/UseNeuralNetwork"
+        android:layout_below="@+id/UseLocation"
+        android:paddingLeft="10dp"
+        android:textOff="N"
+        android:textOn="Y"/>
 </RelativeLayout>

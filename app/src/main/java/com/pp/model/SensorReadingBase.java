@@ -19,6 +19,8 @@ public class SensorReadingBase implements Serializable {
     protected String GyroscopeUnit = "rad/s";
     protected double latitude;
     protected double longitude;
+    protected double vehicleLatitude;
+    protected double vehicleLongitude;
     protected String locationUnit = "dd";
 
     public void setNearestBeaconId(String nearestBeaconId) {
@@ -75,6 +77,14 @@ public class SensorReadingBase implements Serializable {
 
     public void setLongitude(double longitude) {
         this.longitude = formatDouble(longitude);
+    }
+
+    public void setVehicleLatitude(double vehicleLatitude) {
+        this.vehicleLatitude = formatDouble(vehicleLatitude);
+    }
+
+    public void setVehicleLongitude(double vehicleLongitude) {
+        this.vehicleLongitude = formatDouble(vehicleLongitude);
     }
 
     public void setLocationUnit(String locationUnit) {
